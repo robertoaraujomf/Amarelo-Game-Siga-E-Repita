@@ -12,6 +12,9 @@ const MOVE_DURATION := 0.16
 const SWIPE_MIN_DISTANCE := 36.0
 const CAMERA_SPEED := 7.0
 const BOARD_PADDING := 26.0
+## Tamanho fixo (em unidades-mundo) de cada celula. NAO escala com a tela: se o
+## tabuleiro for maior que a area visivel, a camera rola sobre ele.
+const CELL_SIZE := 110.0
 
 var matrix: LevelMatrix
 var rules: PuzzleRules
@@ -80,9 +83,7 @@ func _clear() -> void:
 func _compute_layout() -> void:
 	var cols: int = maxi(matrix.cols, 1)
 	var rows: int = maxi(matrix.rows, 1)
-	var max_w := 660.0
-	var max_h := 820.0
-	cell_size = clampf(min(max_w / float(cols), max_h / float(rows)), 44.0, 150.0)
+	cell_size = CELL_SIZE
 	board_size = Vector2(float(cols), float(rows)) * cell_size
 	_cell_offset = -board_size * 0.5 + Vector2(cell_size, cell_size) * 0.5
 
