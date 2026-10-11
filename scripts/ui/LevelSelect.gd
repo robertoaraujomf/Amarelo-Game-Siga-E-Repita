@@ -1,5 +1,6 @@
 extends Control
-## Tela de selecao/transicao de fases: mostra concluidas, atual e proxima.
+## Tela de selecao/transicao de fases: uma TRILHA serpenteante onde cada "no"
+## representa uma fase (concluida / atual / proxima / bloqueada).
 
 func _ready() -> void:
 	add_child(Background.new())
@@ -7,11 +8,11 @@ func _ready() -> void:
 	var margin := MarginContainer.new()
 	margin.set_anchors_and_offsets_preset(Control.PRESET_FULL_RECT)
 	for s in ["margin_left", "margin_right", "margin_top", "margin_bottom"]:
-		margin.add_theme_constant_override(s, 24)
+		margin.add_theme_constant_override(s, 20)
 	add_child(margin)
 
 	var col := VBoxContainer.new()
-	col.add_theme_constant_override("separation", 16)
+	col.add_theme_constant_override("separation", 14)
 	margin.add_child(col)
 
 	# Cabecalho
@@ -26,54 +27,25 @@ func _ready() -> void:
 	header.add_child(back)
 
 	var title := Label.new()
-	title.text = "Mapa de Fases"
-	title.add_theme_font_size_override("font_size", 36)
+	title.text = "Trilha das Fases"
+	title.add_theme_font_size_override("font_size", 34)
 	title.add_theme_color_override("font_color", Color.WHITE)
 	title.size_flags_horizontal = Control.SIZE_EXPAND_FILL
 	title.vertical_alignment = VERTICAL_ALIGNMENT_CENTER
 	header.add_child(title)
 
-	# Lista rolavel
+	# Trilha rolavel
 	var scroll := ScrollContainer.new()
 	scroll.size_flags_vertical = Control.SIZE_EXPAND_FILL
+	scroll.horizontal_scroll_mode = ScrollContainer.SCROLL_MODE_DISABLED
 	col.add_child(scroll)
 
-	var list := VBoxContainer.new()
-	list.size_flags_horizontal = Control.SIZE_EXPAND_FILL
-	list.add_theme_constant_override("separation", 14)
-	scroll.add_child(list)
-
-	for i in Levels.count():
-		var lvl: Dictionary = Levels.get_level_by_index(i)
-		list.add_child(_make_card(lvl))
+	var trail := LevelTrail.new()
+	trail.selected.connect(_on_selected)
+	trail.build(Levels.levels, GameState)
+	scroll.add_child(trail)
 
 
-func _make_card(lvl: Dictionary) -> Button:
-	var id := int(lvl.get("id", 1))
-	var name := str(lvl.get("name", "Fase"))
-	var status := GameState.level_status(id)
-
-	var label := "%d. %s" % [id, name]
-	var color := Color("4d96ff")
-	match status:
-		"completed":
-			label += "   concluida"
-			color = Color("6bcb77")
-		"current":
-			label += "   atual"
-			color = Color("ffb14d")
-		"locked":
-			label += "   bloqueada"
-			color = Color("6b6b7b")
-		_:
-			label += "   jogar"
-
-	var card := StyleFactory.make_button(label, color, 30)
-	card.custom_minimum_size = Vector2(0, 96)
-	card.disabled = status == "locked"
-	card.alignment = HORIZONTAL_ALIGNMENT_LEFT
-	if not card.disabled:
-		card.pressed.connect(func() -> void:
-			GameState.start_level(id)
-			get_tree().change_scene_to_file("res://scenes/game/Game.tscn"))
-	return card
+func _on_selected(level_id: int) -> void:
+	GameState.start_level(level_id)
+	get_tree().change_scene_to_file("res://scenes/game/Game.tscn")

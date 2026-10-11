@@ -22,8 +22,8 @@ func animate_to(target: Vector2, duration: float) -> void:
 
 func _draw() -> void:
 	var r := cell_size * 0.34
-	# Sombra
-	draw_circle(Vector2(0.0, r * 0.95), r * 0.8, Color(0, 0, 0, 0.18))
+	# Sombra (violeta, nunca preta)
+	draw_circle(Vector2(0.0, r * 0.95), r * 0.8, StyleFactory.SHADOW)
 	# Corpo
 	draw_circle(Vector2.ZERO, r, Color("fff1c9"))
 	draw_circle(Vector2(-r * 0.3, -r * 0.3), r * 0.4, Color(1, 1, 1, 0.4))

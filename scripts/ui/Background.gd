@@ -1,6 +1,7 @@
 class_name Background
 extends Control
-## Fundo gradiente com "bolhas" organicas ao fundo das telas.
+## Fundo gradiente colorido com "bolhas" organicas. Nunca usa branco/preto/cinza
+## como fundo: apenas tons de roxo, rosa, laranja e amarelo.
 
 const TOP := Color("5b2a86")
 const BOTTOM := Color("ff8fab")
@@ -24,8 +25,8 @@ func _draw() -> void:
 		var c := TOP.lerp(BOTTOM, t)
 		draw_rect(Rect2(0.0, h * t, w, h / BANDS + 1.5), c)
 
-	# Bolhas decorativas (formas organicas, sem cantos secos).
-	draw_circle(Vector2(w * 0.16, h * 0.10), w * 0.30, Color(1, 1, 1, 0.06))
-	draw_circle(Vector2(w * 0.92, h * 0.30), w * 0.24, Color(1, 1, 1, 0.05))
-	draw_circle(Vector2(w * 0.08, h * 0.82), w * 0.34, Color(0, 0, 0, 0.05))
-	draw_circle(Vector2(w * 0.80, h * 0.92), w * 0.20, Color(1, 1, 1, 0.05))
+	# Bolhas decorativas (cores suaves, nunca cinza/preto/branco).
+	draw_circle(Vector2(w * 0.16, h * 0.10), w * 0.30, Color("ffd93d", 0.14))
+	draw_circle(Vector2(w * 0.92, h * 0.30), w * 0.24, Color("7c5cff", 0.18))
+	draw_circle(Vector2(w * 0.08, h * 0.82), w * 0.34, Color("ff6b6b", 0.14))
+	draw_circle(Vector2(w * 0.80, h * 0.92), w * 0.20, Color("6bcb77", 0.16))

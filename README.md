@@ -3,7 +3,8 @@
 Jogo de puzzle 2D infantil para Android, feito em **Godot 4.x (GDScript)**.
 Objetivo: partir do **Início**, percorrer **todas as posições válidas** do mapa
 seguindo a **sequência de imagens** e chegar ao **Fim**. O visual é lúdico, cheio
-de formas orgânicas, cantos arredondados e nada de linhas retas/secas.
+de formas orgânicas, cantos arredondados e **nunca** usa fundo branco, preto ou
+cinza (apenas cores vivas).
 
 ---
 
@@ -25,32 +26,58 @@ de formas orgânicas, cantos arredondados e nada de linhas retas/secas.
 O método de controle é escolhido na **Tela de Configurações**:
 
 - **Toque / Deslizar (Swipe):** arraste o dedo na direção desejada.
-- **Setas direcionais:** use o D-pad orgânico que aparece na parte inferior.
+- **Setas direcionais:** use o D-pad que aparece na parte inferior.
 
-No desktop, as setas do teclado e **WASD** funcionam sempre (útil para testar).
-O movimento é **ortogonal estrito** (sem diagonais e sem pular casas) e é
-bloqueado automaticamente ao tentar entrar numa célula vazia, inválida ou cujo
-símbolo não seja o próximo da sequência.
+No desktop, as setas do teclado e **WASD** funcionam sempre. O movimento é
+**ortogonal estrito** (sem diagonais e sem pular casas) e é bloqueado ao tentar
+entrar numa célula vazia, inválida ou cujo token não seja o próximo da sequência.
+
+Botões na tela de jogo:
+
+- **Desfazer:** volta um movimento, restaurando posição, sequência e visitas.
+- **Reiniciar:** recomeça a fase atual do zero.
 
 ## 4. Formato de fase (matriz alfanumérica)
 
-Cada fase é um arquivo JSON em `levels/`. O campo `matrix` é uma matriz de
-**caracteres**, lida linha a linha (cada string = uma linha de colunas).
+Cada fase é um arquivo JSON em `levels/`. O campo `matrix` é a matriz lida
+**linha a linha** (cada string = uma linha). Cada linha pode ser escrita como
+**tokens separados por espaço** (permite tokens com mais de um caractere, ex.:
+`10`, `K`, `P`) ou como caracteres colados (ex.: `XXX43XXXX`).
 
 | Símbolo | Significado |
 |---------|-------------|
 | `X` ou `.` | Posição vazia / inválida (bloqueada) |
 | `A` | Início (posição inicial do jogador) |
-| `B` ou `F` | Fim (objetivo) |
-| `E` | Posição Especial: alterna para a próxima sequência |
-| `1` `2` `3` `4` | Itens sequenciais das imagens animadas |
+| `B` | Fim (objetivo). `F` também é aceito como fim |
+| `E` | Posição Especial: transição para a próxima sequência |
+| qualquer token | Item da sequência: números e/ou letras, fora de ordem |
 
-Exemplo (Fase 1):
+As fases **não têm nome**; são identificadas pelo número (`id`).
+
+### Regras
+
+- O jogador só avança para uma célula adjacente se o token dela for
+  **exatamente** o próximo item da sequência atual.
+- A sequência é **cíclica** (depois do último item volta ao primeiro) e deve ter
+  **no mínimo 4 elementos**.
+- Uma sequência pode **misturar números e letras, fora de ordem**.
+  Exemplos válidos: `1, 3, F, 9` · `K, 2, 5, 3` · `10, 9, P, 7`.
+- **Posição Especial `E`:** só pode ser usada **depois de usar o último item da
+  sequência atual**. Ao entrar nela, o jogo ativa o próximo conjunto de regras
+  (`sequences[i+1]`).
+- **Vitória:** visitar **todas as posições válidas** (exceto o Fim) e só então
+  entrar no **Fim**.
+
+> Dica: não use `A`, `B`, `E`, `F`, `X` ou `.` como itens de sequência, pois são
+> reservados para início, fim, posição especial e vazios.
+
+### Exemplos
+
+Fase 1 (uma sequência):
 
 ```json
 {
   "id": 1,
-  "name": "Vai e Volta",
   "sequences": [["1", "2", "3", "4"]],
   "matrix": [
     "XXX43XXXX",
@@ -62,19 +89,19 @@ Exemplo (Fase 1):
 }
 ```
 
-O código lê essa matriz e monta o tabuleiro dinamicamente (tiles, início, fim,
-posições especiais). Para criar uma fase nova, basta copiar um JSON, ajustar a
-matriz e a lista `sequences`.
+Fase 3 (múltiplas sequências + posição especial, com letras):
 
-### Regras
-
-- O jogador só avança para uma célula adjacente se o símbolo dela for
-  **exatamente** o próximo item da sequência atual.
-- A sequência é **cíclica** (depois do último item volta ao primeiro).
-- Objetivo: visitar **todas as posições válidas** (exceto o Fim) e só então
-  entrar no **Fim**.
-- Com **múltiplas sequências**, ao pisar numa posição `E` o jogo alterna para o
-  próximo conjunto de regras (`sequences[i+1]`).
+```json
+{
+  "id": 3,
+  "sequences": [["1", "3", "K", "9"], ["2", "P", "5", "7", "8"]],
+  "matrix": [
+    "A13K",
+    "P2E9",
+    "578B"
+  ]
+}
+```
 
 ## 5. Estrutura do projeto
 
@@ -90,13 +117,13 @@ siga-e-repita/
     ├── autoload/            # GameState, Levels, Settings
     ├── board/               # LevelMatrix, PuzzleRules, Tile, TrailLayer, Player, Board
     ├── game/                # Game (wiring Board <-> HUD)
-    ├── ui/                  # Hud, Background, telas
-    └── util/                # StyleFactory (formas organicas)
+    ├── ui/                  # Hud, Background, LevelTrail, telas
+    └── util/                # StyleFactory (formas organicas / paleta)
 ```
 
 ## 6. Versionamento com Git
 
-O repositório já está pronto para uso. Para iniciar do zero:
+O repositório já está inicializado. Para iniciar do zero:
 
 ```bash
 git init
@@ -112,7 +139,7 @@ Sugestão de fluxo de branches:
 
 - `main` — versões estáveis.
 - `dev` — integração de novas fases/features.
-- `feat/<nome>` — uma feature por branch (ex.: `feat/fase-02`).
+- `feat/<nome>` — uma feature por branch (ex.: `feat/fase-10`).
 
 O `.gitignore` já exclui cache do Godot (`.godot/`), builds (`/build`), APKs e
 **keystores** (nunca versionar chaves de assinatura).

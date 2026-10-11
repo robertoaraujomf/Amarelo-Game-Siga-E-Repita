@@ -1,7 +1,8 @@
 class_name StyleFactory
 extends RefCounted
 ## Fabrica de estilos "organicos" (bordas muito arredondadas, sombras suaves).
-## Centraliza a direcao de arte: nada de cantos secos ou linhas retas.
+## Direcao de arte: nada de cantos secos, linhas retas nem fundos brancos,
+## pretos ou cinzas - apenas cores vivas.
 
 const COLORS := {
 	"1": Color("ff6b6b"),
@@ -12,20 +13,34 @@ const COLORS := {
 	"A": Color("2ec4b6"),
 	"B": Color("ff5da2"),
 	"F": Color("ff5da2"),
-	"empty": Color("3b2f52"),
 }
 
 const BG_TOP := Color("5b2a86")
 const BG_BOTTOM := Color("ff8fab")
 const TRAIL := Color("8a2be2")
 const HIGHLIGHT := Color("ffe24d")
-const INK := Color("2b1a3d")
-const CARD := Color(1, 1, 1, 0.16)
+
+# Cores de UI (todas coloridas - sem branco/preto/cinza).
+const CARD := Color("5a2aa6", 0.50)          # painel violeta translucido
+const OVERLAY_DIM := Color("3a1c5a", 0.74)   # escurecimento violeta (nao preto)
+const WIN_PANEL := Color("7c5cff")           # painel de vitoria
+const SHADOW := Color("2a0f4a", 0.32)        # sombra violeta (nao preta)
+const HINT := Color("7c5cff", 0.38)          # caixa de dica
 
 
+## Cor de um simbolo/token. Aceita tokens arbitrarios ("10", "K", "P"...).
 static func color_for(symbol: String) -> Color:
-	var c: Color = COLORS.get(symbol, Color("7f8fa6"))
-	return c
+	if COLORS.has(symbol):
+		var c: Color = COLORS[symbol]
+		return c
+	return _hash_color(symbol)
+
+
+static func _hash_color(s: String) -> Color:
+	var h := 0
+	for i in s.length():
+		h = (h * 131 + s.unicode_at(i)) % 360
+	return Color.from_hsv(float(h) / 360.0, 0.62, 0.95)
 
 
 ## Painel com cantos igualmente arredondados (mas bem suaves).
@@ -38,7 +53,7 @@ static func rounded_panel(color: Color, radius: int = 40) -> StyleBoxFlat:
 	return sb
 
 
-## Painel "organico": cada canto com raio diferente + sombra suave.
+## Painel "organico": cada canto com raio diferente + sombra colorida.
 static func organic_panel(color: Color, radius: int = 48) -> StyleBoxFlat:
 	var sb := StyleBoxFlat.new()
 	sb.bg_color = color
@@ -48,7 +63,7 @@ static func organic_panel(color: Color, radius: int = 48) -> StyleBoxFlat:
 	sb.corner_radius_bottom_left = int(radius * 0.85)
 	sb.corner_detail = 18
 	sb.anti_aliasing = true
-	sb.shadow_color = Color(0, 0, 0, 0.22)
+	sb.shadow_color = SHADOW
 	sb.shadow_size = 8
 	sb.shadow_offset = Vector2(0, 6)
 	return sb
@@ -64,10 +79,10 @@ static func make_button(text: String, color: Color, font_size: int = 34) -> Butt
 	b.add_theme_color_override("font_color", Color.WHITE)
 	b.add_theme_color_override("font_hover_color", Color.WHITE)
 	b.add_theme_color_override("font_pressed_color", Color.WHITE)
-	b.add_theme_color_override("font_disabled_color", Color(1, 1, 1, 0.5))
+	b.add_theme_color_override("font_disabled_color", Color(1, 1, 1, 0.55))
 	b.add_theme_stylebox_override("normal", rounded_panel(color, 40))
 	b.add_theme_stylebox_override("hover", rounded_panel(color.lightened(0.10), 40))
 	b.add_theme_stylebox_override("pressed", rounded_panel(color.darkened(0.12), 40))
 	b.add_theme_stylebox_override("focus", StyleBoxEmpty.new())
-	b.add_theme_stylebox_override("disabled", rounded_panel(color.darkened(0.35), 40))
+	b.add_theme_stylebox_override("disabled", rounded_panel(color.darkened(0.30), 40))
 	return b

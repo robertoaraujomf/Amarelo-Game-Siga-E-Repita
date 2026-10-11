@@ -1,10 +1,12 @@
 class_name Hud
 extends CanvasLayer
-## HUD: titulo da fase, sequencia atual de imagens, proxima posicao especial,
-## controles (D-pad ou dica de swipe) e overlay de fase concluida.
+## HUD: titulo da fase, sequencia atual, proxima posicao especial, controles
+## (D-pad ou dica de swipe), botoes de desfazer/reiniciar e overlay de vitoria.
 
 signal back_pressed
 signal dpad(direction: Vector2i)
+signal undo_pressed
+signal restart_pressed
 signal next_level_pressed
 
 var _title: Label
@@ -17,6 +19,8 @@ var _blocked_label: Label
 var _blocked_tween: Tween
 
 var _vbox: VBoxContainer
+var _top_panel: PanelContainer
+var _bottom_panel: PanelContainer
 
 
 func _ready() -> void:
@@ -45,6 +49,7 @@ func _build_top() -> void:
 	var panel := PanelContainer.new()
 	panel.add_theme_stylebox_override("panel", StyleFactory.rounded_panel(StyleFactory.CARD, 44))
 	_vbox.add_child(panel)
+	_top_panel = panel
 
 	var inner := VBoxContainer.new()
 	inner.add_theme_constant_override("separation", 12)
@@ -74,7 +79,7 @@ func _build_top() -> void:
 	var caption := Label.new()
 	caption.text = "Sequencia atual"
 	caption.add_theme_font_size_override("font_size", 20)
-	caption.add_theme_color_override("font_color", Color(1, 1, 1, 0.75))
+	caption.add_theme_color_override("font_color", Color(1, 1, 1, 0.8))
 	caption.horizontal_alignment = HORIZONTAL_ALIGNMENT_CENTER
 	inner.add_child(caption)
 
@@ -86,28 +91,51 @@ func _build_top() -> void:
 	_special_label = Label.new()
 	_special_label.text = ""
 	_special_label.add_theme_font_size_override("font_size", 20)
-	_special_label.add_theme_color_override("font_color", Color(1, 1, 1, 0.9))
+	_special_label.add_theme_color_override("font_color", Color(1, 1, 1, 0.92))
 	_special_label.horizontal_alignment = HORIZONTAL_ALIGNMENT_CENTER
 	inner.add_child(_special_label)
 
 
 func _build_controls() -> void:
-	var holder := Control.new()
-	holder.custom_minimum_size = Vector2(0, 270)
-	holder.size_flags_vertical = Control.SIZE_EXPAND_FILL
-	_vbox.add_child(holder)
+	# Espaco elastico: empurra os controles para o rodape, liberando o mapa.
+	var spacer := Control.new()
+	spacer.size_flags_vertical = Control.SIZE_EXPAND_FILL
+	spacer.mouse_filter = Control.MOUSE_FILTER_IGNORE
+	_vbox.add_child(spacer)
 
-	var center := CenterContainer.new()
-	center.set_anchors_and_offsets_preset(Control.PRESET_FULL_RECT)
-	center.mouse_filter = Control.MOUSE_FILTER_IGNORE
-	holder.add_child(center)
+	_bottom_panel = PanelContainer.new()
+	_bottom_panel.add_theme_stylebox_override("panel", StyleFactory.rounded_panel(StyleFactory.CARD, 44))
+	_vbox.add_child(_bottom_panel)
+
+	var inner := MarginContainer.new()
+	for s in ["margin_left", "margin_right", "margin_top", "margin_bottom"]:
+		inner.add_theme_constant_override(s, 14)
+	_bottom_panel.add_child(inner)
 
 	var col := VBoxContainer.new()
 	col.add_theme_constant_override("separation", 16)
-	center.add_child(col)
+	inner.add_child(col)
 
+	# Botoes de acao (sempre visiveis)
+	var action_row := HBoxContainer.new()
+	action_row.alignment = BoxContainer.ALIGNMENT_CENTER
+	action_row.add_theme_constant_override("separation", 14)
+	col.add_child(action_row)
+
+	var undo := StyleFactory.make_button("Desfazer", Color("ff9f1c"), 28)
+	undo.custom_minimum_size = Vector2(180, 70)
+	undo.pressed.connect(func() -> void: undo_pressed.emit())
+	action_row.add_child(undo)
+
+	var restart := StyleFactory.make_button("Reiniciar", Color("ff5d6c"), 28)
+	restart.custom_minimum_size = Vector2(180, 70)
+	restart.pressed.connect(func() -> void: restart_pressed.emit())
+	action_row.add_child(restart)
+
+	# D-pad (modo setas)
 	_grid = GridContainer.new()
 	_grid.columns = 3
+	_grid.size_flags_horizontal = Control.SIZE_SHRINK_CENTER
 	_grid.add_theme_constant_override("h_separation", 14)
 	_grid.add_theme_constant_override("v_separation", 14)
 	col.add_child(_grid)
@@ -122,14 +150,16 @@ func _build_controls() -> void:
 	_grid.add_child(_dpad_button("v", Vector2i(0, 1)))
 	_grid.add_child(_spacer())
 
+	# Dica de swipe (modo toque)
 	_swipe_hint = Label.new()
 	_swipe_hint.text = "Deslize o dedo sobre o mapa para mover"
 	_swipe_hint.add_theme_font_size_override("font_size", 22)
-	_swipe_hint.add_theme_color_override("font_color", Color(1, 1, 1, 0.9))
+	_swipe_hint.add_theme_color_override("font_color", Color(1, 1, 1, 0.92))
 	_swipe_hint.horizontal_alignment = HORIZONTAL_ALIGNMENT_CENTER
-	_swipe_hint.add_theme_stylebox_override("normal",
-			StyleFactory.rounded_panel(Color(1, 1, 1, 0.14), 34))
+	_swipe_hint.vertical_alignment = VERTICAL_ALIGNMENT_CENTER
+	_swipe_hint.add_theme_stylebox_override("normal", StyleFactory.rounded_panel(StyleFactory.HINT, 34))
 	_swipe_hint.custom_minimum_size = Vector2(420, 70)
+	_swipe_hint.size_flags_horizontal = Control.SIZE_SHRINK_CENTER
 	col.add_child(_swipe_hint)
 
 
@@ -149,7 +179,10 @@ func _dpad_button(glyph: String, dir: Vector2i) -> Button:
 
 func _build_blocked() -> void:
 	var center := CenterContainer.new()
-	center.set_anchors_and_offsets_preset(Control.PRESET_FULL_RECT)
+	center.anchor_left = 0.0
+	center.anchor_right = 1.0
+	center.anchor_top = 0.0
+	center.anchor_bottom = 0.45
 	center.mouse_filter = Control.MOUSE_FILTER_IGNORE
 	add_child(center)
 
@@ -175,7 +208,7 @@ func _build_overlay() -> void:
 	add_child(_overlay)
 
 	var dim := ColorRect.new()
-	dim.color = Color(0, 0, 0, 0.55)
+	dim.color = StyleFactory.OVERLAY_DIM
 	dim.set_anchors_and_offsets_preset(Control.PRESET_FULL_RECT)
 	_overlay.add_child(dim)
 
@@ -185,7 +218,7 @@ func _build_overlay() -> void:
 
 	var panel := PanelContainer.new()
 	panel.add_theme_stylebox_override("panel",
-			StyleFactory.rounded_panel(Color("2b1a3d"), 56))
+			StyleFactory.rounded_panel(StyleFactory.WIN_PANEL, 56))
 	center.add_child(panel)
 
 	var margin := MarginContainer.new()
@@ -200,14 +233,14 @@ func _build_overlay() -> void:
 	var title := Label.new()
 	title.text = "Fase concluida!"
 	title.add_theme_font_size_override("font_size", 40)
-	title.add_theme_color_override("font_color", Color("ffd93d"))
+	title.add_theme_color_override("font_color", Color("ffe24d"))
 	title.horizontal_alignment = HORIZONTAL_ALIGNMENT_CENTER
 	col.add_child(title)
 
 	var star := Label.new()
 	star.text = "Voce passou por todas as posicoes!"
 	star.add_theme_font_size_override("font_size", 20)
-	star.add_theme_color_override("font_color", Color(1, 1, 1, 0.85))
+	star.add_theme_color_override("font_color", Color(1, 1, 1, 0.9))
 	star.horizontal_alignment = HORIZONTAL_ALIGNMENT_CENTER
 	star.autowrap_mode = TextServer.AUTOWRAP_WORD_SMART
 	star.custom_minimum_size = Vector2(360, 0)
@@ -219,7 +252,7 @@ func _build_overlay() -> void:
 		next_level_pressed.emit())
 	col.add_child(next)
 
-	var map := StyleFactory.make_button("Mapa de fases", Color("4d96ff"), 30)
+	var map := StyleFactory.make_button("Trilha das fases", Color("4d96ff"), 30)
 	map.pressed.connect(func() -> void:
 		_overlay.visible = false
 		back_pressed.emit())
@@ -227,8 +260,23 @@ func _build_overlay() -> void:
 
 
 # ------------------------------------------------------------------ API
-func set_level_info(level_name: String, index: int, total: int) -> void:
-	_title.text = "Fase %d/%d - %s" % [index, total, level_name]
+## Altura da HUD no topo, em pixels (para a camera nao cobrir o jogador).
+func top_margin() -> float:
+	if _top_panel == null:
+		return 0.0
+	return _top_panel.global_position.y + _top_panel.size.y
+
+
+## Altura da HUD no rodape, em pixels.
+func bottom_margin() -> float:
+	if _bottom_panel == null:
+		return 0.0
+	var height := get_viewport().get_visible_rect().size.y
+	return height - _bottom_panel.global_position.y
+
+
+func set_level_info(index: int, total: int) -> void:
+	_title.text = "Fase %d de %d" % [index, total]
 
 
 func set_sequence(seq: Array, step: int) -> void:
@@ -288,3 +336,7 @@ func show_win() -> void:
 	_overlay.modulate.a = 0.0
 	var tw := create_tween()
 	tw.tween_property(_overlay, "modulate:a", 1.0, 0.25)
+
+
+func hide_win() -> void:
+	_overlay.visible = false

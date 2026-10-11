@@ -1,6 +1,15 @@
 class_name PuzzleRules
 extends RefCounted
-## Motor de regras do puzzle: sequencias, visitas e condicao de vitoria.
+## Motor de regras: sequencias (tokens livres), visitas e vitoria.
+##
+## Regras:
+##  - So avanca para celula adjacente cujo token seja o proximo da sequencia.
+##  - A sequencia e ciclica e tem no minimo 4 elementos (recomendado).
+##  - Posicao especial "E": so pode ser usada DEPOIS de usar o ULTIMO item da
+##    sequencia atual; ao entrar nela, ativa a proxima sequencia (transicao).
+##  - Vence ao visitar todas as posicoes validas (exceto o Fim) e entrar no Fim.
+
+const MIN_SEQUENCE_LEN := 4
 
 var matrix: LevelMatrix
 var sequences: Array = []
@@ -18,9 +27,12 @@ func _init(p_matrix: LevelMatrix, p_sequences: Array) -> void:
 		for item in seq:
 			s.append(str(item))
 		if s.size() > 0:
+			if s.size() < MIN_SEQUENCE_LEN:
+				push_warning("Sequencia com menos de %d elementos: %s"
+						% [MIN_SEQUENCE_LEN, str(s)])
 			clean.append(s)
 	if clean.is_empty():
-		clean = [["1"]]
+		clean = [["1", "2", "3", "4"]]
 	sequences = clean
 
 	visited[matrix.start_pos] = true
@@ -37,7 +49,15 @@ func next_symbol() -> String:
 	return str(seq[step % seq.size()])
 
 
-## O jogador so avanca para celula adjacente cujo simbolo casa com a sequencia.
+## A sequencia atual ja foi concluida (usou o ultimo item) e pode transicionar?
+func sequence_completed() -> bool:
+	var seq: Array = current_sequence()
+	if seq.is_empty():
+		return false
+	return step > 0 and step % seq.size() == 0
+
+
+## O jogador so avanca para celula adjacente cujo token casa com a sequencia.
 func can_move(from: Vector2i, to: Vector2i) -> bool:
 	if not matrix.is_inside(to):
 		return false
@@ -47,7 +67,8 @@ func can_move(from: Vector2i, to: Vector2i) -> bool:
 	if LevelMatrix.is_end(sym):
 		return all_visited()
 	if LevelMatrix.is_special(sym):
-		return true
+		# Exige ter usado o ultimo item da sequencia antes de transicionar.
+		return sequence_completed()
 	if LevelMatrix.is_start(sym):
 		return true
 	return sym == next_symbol()
@@ -60,7 +81,6 @@ func register_arrival(to: Vector2i) -> void:
 	if LevelMatrix.is_end(sym):
 		return
 	if LevelMatrix.is_special(sym):
-		# Alterna para o proximo conjunto de regras.
 		active_sequence = (active_sequence + 1) % sequences.size()
 		step = 0
 		return

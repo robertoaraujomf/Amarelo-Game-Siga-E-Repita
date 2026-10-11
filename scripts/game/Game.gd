@@ -5,6 +5,7 @@ extends Node2D
 @onready var hud: Hud = $HUD
 
 var _level: Dictionary = {}
+var _camera_ready := false
 
 
 func _ready() -> void:
@@ -20,6 +21,8 @@ func _ready() -> void:
 	hud.back_pressed.connect(_on_back)
 	hud.dpad.connect(board.try_move)
 	hud.next_level_pressed.connect(_on_next)
+	hud.undo_pressed.connect(_on_undo)
+	hud.restart_pressed.connect(_on_restart)
 
 	board.state_changed.connect(_refresh_hud)
 	board.sequence_changed.connect(_refresh_hud)
@@ -29,9 +32,26 @@ func _ready() -> void:
 	board.load_level(_level)
 
 	var idx := Levels.index_of_id(int(_level.get("id", 1)))
-	hud.set_level_info(str(_level.get("name", "Fase")), idx + 1, Levels.count())
+	hud.set_level_info(idx + 1, Levels.count())
 	hud.set_control_mode(Settings.control_mode)
+	_sync_view_margins()
 	_refresh_hud()
+
+
+func _process(_delta: float) -> void:
+	_sync_view_margins()
+	if not _camera_ready and board.view_top > 0.0:
+		_camera_ready = true
+		board.refresh_camera()
+
+
+## Informa ao tabuleiro quanto de tela a HUD ocupa no topo/rodape, para a
+## camera manter o jogador na faixa livre entre os paineis.
+func _sync_view_margins() -> void:
+	if board == null or hud == null:
+		return
+	board.view_top = hud.top_margin()
+	board.view_bottom = hud.bottom_margin()
 
 
 func _refresh_hud() -> void:
@@ -42,6 +62,18 @@ func _refresh_hud() -> void:
 func _on_won() -> void:
 	GameState.mark_completed(int(_level.get("id", 1)))
 	hud.show_win()
+
+
+func _on_undo() -> void:
+	hud.hide_win()
+	board.undo_move()
+	_refresh_hud()
+
+
+func _on_restart() -> void:
+	hud.hide_win()
+	board.restart()
+	_refresh_hud()
 
 
 func _on_next() -> void:

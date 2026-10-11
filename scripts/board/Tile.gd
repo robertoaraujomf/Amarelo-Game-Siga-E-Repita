@@ -1,6 +1,6 @@
 class_name Tile
 extends Node2D
-## Celula do tabuleiro: desenha uma forma organica arredondada + icone.
+## Celula do tabuleiro: desenha uma forma organica arredondada + icone/token.
 
 var symbol: String = "."
 var cell_size: float = 96.0
@@ -26,7 +26,7 @@ func _draw() -> void:
 	# Corpo organico (bem arredondado, cantos irregulares).
 	draw_style_box(StyleFactory.organic_panel(base, int(r * 0.85)), rect)
 
-	# Brilho superior (aspecto de bala/gelatina).
+	# Brilho superior (aspecto de bala/gelatina) - highlight, nao fundo.
 	draw_circle(Vector2(-r * 0.30, -r * 0.34), r * 0.30, Color(1, 1, 1, 0.26))
 
 	# Anel interno indicando que a posicao ja foi visitada.
@@ -47,18 +47,25 @@ func _draw() -> void:
 
 func _draw_glyph(r: float) -> void:
 	var white := Color.WHITE
-	if LevelMatrix.is_digit(symbol):
-		var font := ThemeDB.fallback_font
-		var fs := int(cell_size * 0.5)
-		var s := font.get_string_size(symbol, HORIZONTAL_ALIGNMENT_CENTER, -1, fs)
-		draw_string(font, Vector2(-s.x * 0.5, fs * 0.36), symbol,
-				HORIZONTAL_ALIGNMENT_LEFT, -1, fs, white)
-	elif LevelMatrix.is_special(symbol):
+	if LevelMatrix.is_special(symbol):
 		_draw_sparkle(r, white)
 	elif LevelMatrix.is_start(symbol):
 		_draw_home(r, white)
 	elif LevelMatrix.is_end(symbol):
 		_draw_star(r, white)
+	else:
+		_draw_token(r, white)
+
+
+## Desenha o token (numero, letra ou multi-caractere como "10").
+func _draw_token(r: float, c: Color) -> void:
+	var font := ThemeDB.fallback_font
+	var fs := int(cell_size * 0.5)
+	if symbol.length() >= 2:
+		fs = int(cell_size * 0.36)
+	var s := font.get_string_size(symbol, HORIZONTAL_ALIGNMENT_CENTER, -1, fs)
+	draw_string(font, Vector2(-s.x * 0.5, fs * 0.36), symbol,
+			HORIZONTAL_ALIGNMENT_LEFT, -1, fs, c)
 
 
 func _draw_sparkle(r: float, c: Color) -> void:

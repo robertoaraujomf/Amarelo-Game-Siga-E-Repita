@@ -1,6 +1,5 @@
 {
   "id": 1,
-  "name": "Vai e Volta",
   "sequences": [["1", "2", "3", "4"]],
   "matrix": [
     "XXX43XXXX",

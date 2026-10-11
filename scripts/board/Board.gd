@@ -24,6 +24,11 @@ var cell_size: float = 96.0
 var board_size := Vector2.ZERO
 var player_cell := Vector2i.ZERO
 
+## Pixels reservados pela HUD no topo/rodape; a camera mantem o jogador
+## dentro da faixa visivel entre essas margens.
+var view_top: float = 0.0
+var view_bottom: float = 0.0
+
 var _cell_offset := Vector2.ZERO
 var _level: Dictionary = {}
 var _trail_cells: Array[Vector2i] = []
@@ -31,6 +36,7 @@ var _is_moving := false
 var _pending_win := false
 var _swipe_start := Vector2.ZERO
 var _swipe_active := false
+var _history: Array = []            # snapshots para "desfazer"
 
 
 # ---------------------------------------------------------------- construcao
@@ -68,6 +74,7 @@ func _clear() -> void:
 	camera = null
 	_is_moving = false
 	_pending_win = false
+	_history.clear()
 
 
 func _compute_layout() -> void:
@@ -128,25 +135,35 @@ func _process(_delta: float) -> void:
 	camera.position = _camera_target()
 
 
-## Segue o jogador suavemente, sem deformar proporcao, e centraliza quando o
-## tabuleiro cabe inteiro na tela.
+## Segue o jogador suavemente, sem deformar proporcao, respeitando as margens
+## da HUD. Se o tabuleiro couber na faixa visivel ele fica centralizado; se for
+## maior, a camera rola mantendo o jogador sempre dentro da faixa livre.
 func _camera_target() -> Vector2:
 	var vp := get_viewport_rect().size / camera.zoom
 	var half_view := vp * 0.5
 	var half_board := board_size * 0.5 + Vector2(BOARD_PADDING, BOARD_PADDING)
 
-	var target := player.position
-	if half_board.x <= half_view.x:
-		target.x = 0.0
-	else:
-		var lim_x := half_board.x - half_view.x
-		target.x = clampf(target.x, -lim_x, lim_x)
-	if half_board.y <= half_view.y:
-		target.y = 0.0
-	else:
-		var lim_y := half_board.y - half_view.y
-		target.y = clampf(target.y, -lim_y, lim_y)
-	return target
+	# Centro que deixa o jogador no meio da faixa visivel (entre as margens).
+	var desired := Vector2(
+		player.position.x,
+		player.position.y - (view_top - view_bottom) * 0.5
+	)
+
+	return Vector2(
+		_clamp_camera_axis(desired.x, half_view.x, half_board.x, 0.0, 0.0),
+		_clamp_camera_axis(desired.y, half_view.y, half_board.y, view_top, view_bottom)
+	)
+
+
+## Restringe o centro da camera para que a faixa visivel nunca passe das bordas
+## do tabuleiro. `lo`/`hi` sao as margens da HUD nas extremidades do eixo; quando
+## o tabuleiro cabe na faixa, o resultado e o centro fixo.
+func _clamp_camera_axis(desired: float, half_view: float, half_board: float, lo: float, hi: float) -> float:
+	var min_c := -half_board + half_view - lo
+	var max_c := half_board - half_view + hi
+	if min_c <= max_c:
+		return clampf(desired, min_c, max_c)
+	return (min_c + max_c) * 0.5
 
 
 func _snap_camera() -> void:
@@ -154,6 +171,12 @@ func _snap_camera() -> void:
 		return
 	camera.reset_smoothing()
 	camera.position = _camera_target()
+
+
+## Recentraliza a camera imediatamente (usado quando as margens da HUD ficam
+## conhecidas, para evitar um deslize inicial).
+func refresh_camera() -> void:
+	_snap_camera()
 
 
 # ------------------------------------------------------------------- input
@@ -202,6 +225,7 @@ func try_move(dir: Vector2i) -> void:
 		_emit_blocked()
 		return
 
+	_history.append(_snapshot())
 	player_cell = target
 	rules.register_arrival(target)
 	_trail_cells.append(target)
@@ -228,6 +252,53 @@ func _emit_blocked() -> void:
 	blocked.emit()
 
 
+# ---------------------------------------------------------- desfazer/reiniciar
+func _snapshot() -> Dictionary:
+	return {
+		"cell": player_cell,
+		"active": rules.active_sequence,
+		"step": rules.step,
+		"visited": rules.visited.duplicate(),
+		"trail_size": _trail_cells.size(),
+	}
+
+
+func can_undo() -> bool:
+	return not _history.is_empty()
+
+
+## Desfaz o ultimo movimento, restaurando posicao, sequencia e visitas.
+func undo_move() -> void:
+	if _is_moving or _history.is_empty() or matrix == null:
+		return
+	var s: Dictionary = _history.pop_back()
+
+	player_cell = s["cell"]
+	rules.active_sequence = int(s["active"])
+	rules.step = int(s["step"])
+	rules.visited = s["visited"]
+
+	var kept: Array[Vector2i] = []
+	var n: int = int(s["trail_size"])
+	for i in n:
+		kept.append(_trail_cells[i])
+	_trail_cells = kept
+	if trail:
+		trail.set_cells(_trail_cells)
+
+	player.position = _cell_center(player_cell)
+	_refresh_visuals()
+	state_changed.emit()
+	sequence_changed.emit()
+
+
+## Reinicia a fase atual do zero.
+func restart() -> void:
+	if _level.is_empty():
+		return
+	load_level(_level)
+
+
 # ------------------------------------------------------------------ estado
 func _refresh_visuals() -> void:
 	var next_sym := rules.next_symbol()
@@ -235,7 +306,7 @@ func _refresh_visuals() -> void:
 		var tile: Tile = tiles[pos]
 		tile.visited = rules.visited.has(pos)
 		tile.is_player = pos == player_cell
-		tile.is_next = LevelMatrix.is_digit(tile.symbol) and tile.symbol == next_sym
+		tile.is_next = tile.symbol == next_sym
 		tile.queue_redraw()
 
 
@@ -273,7 +344,7 @@ func _draw() -> void:
 			board_size + Vector2(pad, pad) * 2.0)
 	draw_style_box(StyleFactory.rounded_panel(StyleFactory.CARD, 60), rect)
 
-	# Marcas sutis nas posicoes vazias.
+	# Marcas sutis nas posicoes vazias (amarelo suave, nunca branco/cinza).
 	for pos in matrix.all_positions():
 		if LevelMatrix.is_empty(matrix.symbol_at(pos)):
-			draw_circle(_cell_center(pos), cell_size * 0.05, Color(1, 1, 1, 0.10))
+			draw_circle(_cell_center(pos), cell_size * 0.05, Color("ffe24d", 0.14))
