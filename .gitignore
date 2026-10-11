@@ -1,0 +1,54 @@
+# =============================================================
+#  Siga e Repita - .gitignore (Godot 4 / Android mobile project)
+# =============================================================
+
+# --- Godot 4 editor cache & imports -------------------------
+.godot/
+.import/
+
+# --- Godot export metadata (paths/keys, never shared) --------
+export.cfg
+export_presets.cfg
+*.translation
+
+# --- Builds / exports ---------------------------------------
+/build/
+/bin/
+/export/
+android/build/
+*.apk
+*.apkz
+*.aab
+*.idsig
+*.apks
+*.xapk
+
+# --- Android signing (NUNCA versionar chaves) ---------------
+*.keystore
+*.jks
+*.p12
+keystore.properties
+
+# --- Mono/C# (caso o projeto passe a usar C#) ---------------
+.mono/
+data_*/
+mono_crash.*.json
+*.csproj
+*.sln
+
+# --- Sistema operacional ------------------------------------
+.DS_Store
+Thumbs.db
+desktop.ini
+
+# --- IDEs ---------------------------------------------------
+.vscode/
+.idea/
+*.swp
+*.swo
+*~
+
+# --- Temporarios --------------------------------------------
+*.tmp
+*.bak
+*.log
