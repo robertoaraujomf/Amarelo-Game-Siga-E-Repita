@@ -11,7 +11,8 @@ signal next_level_pressed
 
 var _title: Label
 var _seq_box: HBoxContainer
-var _special_label: Label
+var _special_box: HBoxContainer
+var _special_chip: FigureIcon
 var _grid: GridContainer
 var _swipe_hint: Label
 var _overlay: Control
@@ -88,12 +89,22 @@ func _build_top() -> void:
 	_seq_box.add_theme_constant_override("separation", 10)
 	inner.add_child(_seq_box)
 
-	_special_label = Label.new()
-	_special_label.text = ""
-	_special_label.add_theme_font_size_override("font_size", 20)
-	_special_label.add_theme_color_override("font_color", Color(1, 1, 1, 0.92))
-	_special_label.horizontal_alignment = HORIZONTAL_ALIGNMENT_CENTER
-	inner.add_child(_special_label)
+	_special_box = HBoxContainer.new()
+	_special_box.alignment = BoxContainer.ALIGNMENT_CENTER
+	_special_box.add_theme_constant_override("separation", 10)
+	_special_box.visible = false
+	inner.add_child(_special_box)
+
+	var approach := Label.new()
+	approach.text = "Chegue até"
+	approach.add_theme_font_size_override("font_size", 24)
+	approach.add_theme_color_override("font_color", Color(1, 1, 1, 0.92))
+	approach.vertical_alignment = VERTICAL_ALIGNMENT_CENTER
+	_special_box.add_child(approach)
+
+	_special_chip = FigureIcon.new()
+	_special_chip.custom_minimum_size = Vector2(56, 56)
+	_special_box.add_child(_special_chip)
 
 
 func _build_controls() -> void:
@@ -246,17 +257,11 @@ func _build_overlay() -> void:
 	star.custom_minimum_size = Vector2(360, 0)
 	col.add_child(star)
 
-	var next := StyleFactory.make_button("Proxima fase", Color("6bcb77"), 34)
+	var next := StyleFactory.make_button("Continuar", Color("6bcb77"), 34)
 	next.pressed.connect(func() -> void:
 		_overlay.visible = false
 		next_level_pressed.emit())
 	col.add_child(next)
-
-	var map := StyleFactory.make_button("Trilha das fases", Color("4d96ff"), 30)
-	map.pressed.connect(func() -> void:
-		_overlay.visible = false
-		back_pressed.emit())
-	col.add_child(map)
 
 
 # ------------------------------------------------------------------ API
@@ -306,11 +311,12 @@ func set_sequence(seq: Array, step: int) -> void:
 		_seq_box.add_child(chip)
 
 
-func set_next_special(pos: Vector2i) -> void:
-	if pos == Vector2i(-1, -1):
-		_special_label.text = "Sem posicoes especiais nesta fase"
-	else:
-		_special_label.text = "Proxima posicao especial (E): (%d, %d)" % [pos.x + 1, pos.y + 1]
+func set_next_special(pos: Vector2i, symbol: String) -> void:
+	if pos == Vector2i(-1, -1) or symbol == "":
+		_special_box.visible = false
+		return
+	_special_box.visible = true
+	_special_chip.symbol = symbol
 
 
 func set_control_mode(mode: int) -> void:

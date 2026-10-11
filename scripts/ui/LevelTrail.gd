@@ -36,7 +36,7 @@ func build(levels: Array, progress: Node) -> void:
 		btn.focus_mode = Control.FOCUS_NONE
 		btn.size = Vector2(NODE_R * 2.2, NODE_R * 2.2)
 		btn.position = pos - btn.size * 0.5
-		btn.disabled = status == "locked"
+		btn.disabled = status != "current"
 		for state in ["normal", "hover", "pressed", "disabled", "focus"]:
 			btn.add_theme_stylebox_override(state, StyleBoxEmpty.new())
 		var lid := id

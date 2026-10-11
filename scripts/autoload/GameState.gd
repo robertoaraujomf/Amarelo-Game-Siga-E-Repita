@@ -32,14 +32,20 @@ func is_unlocked(id: int) -> bool:
 	return completed.has(id - 1)
 
 
+## Proxima fase jogavel: menor id ainda nao concluido (progressao linear).
+func next_level_id() -> int:
+	var id := 1
+	while completed.has(id):
+		id += 1
+	return id
+
+
 func level_status(id: int) -> String:
 	if is_completed(id):
 		return "completed"
-	if not is_unlocked(id):
-		return "locked"
-	if id == current_level_id:
+	if id == next_level_id():
 		return "current"
-	return "open"
+	return "locked"
 
 
 func save_progress() -> void:

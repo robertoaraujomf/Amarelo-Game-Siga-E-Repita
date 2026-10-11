@@ -327,6 +327,14 @@ func get_next_special() -> Vector2i:
 	return best
 
 
+## Simbolo/figura da proxima posicao especial (o que o jogador deve alcancar).
+func get_next_special_symbol() -> String:
+	var pos := get_next_special()
+	if pos == Vector2i(-1, -1) or matrix == null:
+		return ""
+	return matrix.symbol_at(pos)
+
+
 func current_sequence() -> Array:
 	return rules.current_sequence()
 

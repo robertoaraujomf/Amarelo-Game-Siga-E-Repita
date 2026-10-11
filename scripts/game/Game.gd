@@ -9,6 +9,12 @@ var _camera_ready := false
 
 
 func _ready() -> void:
+	# Nao permite abrir uma fase fora de ordem (pular fases).
+	if not GameState.is_completed(GameState.current_level_id) \
+			and GameState.current_level_id != GameState.next_level_id():
+		get_tree().change_scene_to_file("res://scenes/ui/LevelSelect.tscn")
+		return
+
 	_level = Levels.get_level_by_id(GameState.current_level_id)
 	if _level.is_empty() and Levels.count() > 0:
 		_level = Levels.get_level_by_index(0)
@@ -56,7 +62,7 @@ func _sync_view_margins() -> void:
 
 func _refresh_hud() -> void:
 	hud.set_sequence(board.current_sequence(), board.current_step())
-	hud.set_next_special(board.get_next_special())
+	hud.set_next_special(board.get_next_special(), board.get_next_special_symbol())
 
 
 func _on_won() -> void:
@@ -77,12 +83,8 @@ func _on_restart() -> void:
 
 
 func _on_next() -> void:
-	var next_id := int(_level.get("id", 1)) + 1
-	if Levels.get_level_by_id(next_id).is_empty():
-		get_tree().change_scene_to_file("res://scenes/ui/LevelSelect.tscn")
-	else:
-		GameState.start_level(next_id)
-		get_tree().reload_current_scene()
+	# A trilha de fases e SEMPRE exibida entre uma fase e outra.
+	get_tree().change_scene_to_file("res://scenes/ui/LevelSelect.tscn")
 
 
 func _on_back() -> void:

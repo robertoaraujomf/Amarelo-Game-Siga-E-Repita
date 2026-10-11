@@ -32,14 +32,9 @@ func _ready() -> void:
 
 	col.add_child(_gap(30))
 
-	var play := StyleFactory.make_button(_play_label(), Color("6bcb77"), 40)
+	var play := StyleFactory.make_button("Jogar", Color("6bcb77"), 40)
 	play.pressed.connect(_on_play)
 	col.add_child(play)
-
-	var levels := StyleFactory.make_button("Mapa de fases", Color("4d96ff"), 34)
-	levels.pressed.connect(func() -> void:
-		get_tree().change_scene_to_file("res://scenes/ui/LevelSelect.tscn"))
-	col.add_child(levels)
 
 	var settings := StyleFactory.make_button("Configuracoes", Color("b983ff"), 34)
 	settings.pressed.connect(func() -> void:
@@ -51,12 +46,6 @@ func _ready() -> void:
 	col.add_child(quit)
 
 
-func _play_label() -> String:
-	if GameState.current_level_id > 1 and GameState.is_unlocked(GameState.current_level_id):
-		return "Continuar - Fase %d" % GameState.current_level_id
-	return "Jogar"
-
-
 func _gap(h: int) -> Control:
 	var c := Control.new()
 	c.custom_minimum_size = Vector2(0, h)
@@ -65,8 +54,5 @@ func _gap(h: int) -> Control:
 
 
 func _on_play() -> void:
-	var id := GameState.current_level_id
-	if not GameState.is_unlocked(id):
-		id = 1
-	GameState.start_level(id)
-	get_tree().change_scene_to_file("res://scenes/game/Game.tscn")
+	# A trilha de fases e o hub: sempre passa por ela antes de jogar.
+	get_tree().change_scene_to_file("res://scenes/ui/LevelSelect.tscn")
