@@ -1,7 +1,7 @@
 class_name Board
 extends Node2D
 ## Monta o grid a partir da matriz da fase, interpreta os controles,
-## valida movimentos, desenha o trajeto e comanda a camera suave.
+## valida movimentos, desenha o trajeto e comanda a câmera suave.
 
 signal state_changed
 signal sequence_changed
@@ -12,8 +12,8 @@ const MOVE_DURATION := 0.16
 const SWIPE_MIN_DISTANCE := 36.0
 const CAMERA_SPEED := 7.0
 const BOARD_PADDING := 26.0
-## Tamanho fixo (em unidades-mundo) de cada celula. NAO escala com a tela: se o
-## tabuleiro for maior que a area visivel, a camera rola sobre ele.
+## Tamanho fixo (em unidades-mundo) de cada célula. NAO escala com a tela: se o
+## tabuleiro for maior que a área visível, a câmera rola sobre ele.
 const CELL_SIZE := 110.0
 
 var matrix: LevelMatrix
@@ -27,7 +27,7 @@ var cell_size: float = 96.0
 var board_size := Vector2.ZERO
 var player_cell := Vector2i.ZERO
 
-## Pixels reservados pela HUD no topo/rodape; a camera mantem o jogador
+## Pixels reservados pela HUD no topo/rodapé; a câmera mantem o jogador
 ## dentro da faixa visivel entre essas margens.
 var view_top: float = 0.0
 var view_bottom: float = 0.0
@@ -129,7 +129,7 @@ func _build_camera() -> void:
 	camera.make_current()
 
 
-# ------------------------------------------------------------------ camera
+# ------------------------------------------------------------------ câmera
 func _process(_delta: float) -> void:
 	if camera == null or player == null:
 		return
@@ -138,7 +138,7 @@ func _process(_delta: float) -> void:
 
 ## Segue o jogador suavemente, sem deformar proporcao, respeitando as margens
 ## da HUD. Se o tabuleiro couber na faixa visivel ele fica centralizado; se for
-## maior, a camera rola mantendo o jogador sempre dentro da faixa livre.
+## maior, a câmera rola mantendo o jogador sempre dentro da faixa livre.
 func _camera_target() -> Vector2:
 	var vp := get_viewport_rect().size / camera.zoom
 	var half_view := vp * 0.5
@@ -156,7 +156,7 @@ func _camera_target() -> Vector2:
 	)
 
 
-## Restringe o centro da camera para que a faixa visivel nunca passe das bordas
+## Restringe o centro da câmera para que a faixa visível nunca passe das bordas
 ## do tabuleiro. `lo`/`hi` sao as margens da HUD nas extremidades do eixo; quando
 ## o tabuleiro cabe na faixa, o resultado e o centro fixo.
 func _clamp_camera_axis(desired: float, half_view: float, half_board: float, lo: float, hi: float) -> float:
@@ -174,7 +174,7 @@ func _snap_camera() -> void:
 	camera.position = _camera_target()
 
 
-## Recentraliza a camera imediatamente (usado quando as margens da HUD ficam
+## Recentraliza a câmera imediatamente (usado quando as margens da HUD ficam
 ## conhecidas, para evitar um deslize inicial).
 func refresh_camera() -> void:
 	_snap_camera()
@@ -268,7 +268,7 @@ func can_undo() -> bool:
 	return not _history.is_empty()
 
 
-## Desfaz o ultimo movimento, restaurando posicao, sequencia e visitas.
+## Desfaz o último movimento, restaurando posição, sequência e visitas.
 func undo_move() -> void:
 	if _is_moving or _history.is_empty() or matrix == null:
 		return
@@ -311,7 +311,7 @@ func _refresh_visuals() -> void:
 		tile.queue_redraw()
 
 
-## Proxima posicao especial (E) ainda nao visitada, ou (-1,-1) se nao houver.
+## Próxima posição especial (E) ainda não visitada, ou (-1,-1) se não houver.
 func get_next_special() -> Vector2i:
 	if rules == null or matrix.special_positions.is_empty():
 		return Vector2i(-1, -1)
@@ -327,7 +327,7 @@ func get_next_special() -> Vector2i:
 	return best
 
 
-## Simbolo/figura da proxima posicao especial (o que o jogador deve alcancar).
+## Símbolo/figura da próxima posição especial (o que o jogador deve alcancar).
 func get_next_special_symbol() -> String:
 	var pos := get_next_special()
 	if pos == Vector2i(-1, -1) or matrix == null:
@@ -353,7 +353,7 @@ func _draw() -> void:
 			board_size + Vector2(pad, pad) * 2.0)
 	draw_style_box(StyleFactory.rounded_panel(StyleFactory.CARD, 60), rect)
 
-	# Marcas sutis nas posicoes vazias (amarelo suave, nunca branco/cinza).
+	# Marcas sutis nas posições vazias (amarelo suave, nunca branco/cinza).
 	for pos in matrix.all_positions():
 		if LevelMatrix.is_empty(matrix.symbol_at(pos)):
 			draw_circle(_cell_center(pos), cell_size * 0.05, Color("ffe24d", 0.14))

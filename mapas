@@ -1,0 +1,12 @@
+FASE 1
+
+Posição inicial A
+Posição final B
+Células vazias X
+Sequência 1 2 3 4
+
+X X X 4 3 X X X X
+x X X 1 2 X X X X
+x X X 2 1 X X X X
+A 1 2 3 4 X X X X
+X X X 4 1 2 3 4 B

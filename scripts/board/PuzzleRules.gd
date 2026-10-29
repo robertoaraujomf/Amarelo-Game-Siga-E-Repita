@@ -1,13 +1,13 @@
 class_name PuzzleRules
 extends RefCounted
-## Motor de regras: sequencias (tokens livres), visitas e vitoria.
+## Motor de regras: sequências (tokens livres), visitas e vitória.
 ##
 ## Regras:
-##  - So avanca para celula adjacente cujo token seja o proximo da sequencia.
-##  - A sequencia e ciclica e tem no minimo 4 elementos (recomendado).
-##  - Posicao especial "E": so pode ser usada DEPOIS de usar o ULTIMO item da
-##    sequencia atual; ao entrar nela, ativa a proxima sequencia (transicao).
-##  - Vence ao visitar todas as posicoes validas (exceto o Fim) e entrar no Fim.
+##  - So avança para célula adjacente cujo token seja o próximo da sequência.
+##  - A sequência e cíclica e tem no mínimo 4 elementos (recomendado).
+##  - Posição especial "E": so pode ser usada DEPOIS de usar o ÚLTIMO item da
+##    sequência atual; ao entrar nela, ativa a próxima sequência (transição).
+##  - Vence ao visitar todas as posições válidas (exceto o Fim) e entrar no Fim.
 
 const MIN_SEQUENCE_LEN := 4
 
@@ -28,7 +28,7 @@ func _init(p_matrix: LevelMatrix, p_sequences: Array) -> void:
 			s.append(str(item))
 		if s.size() > 0:
 			if s.size() < MIN_SEQUENCE_LEN:
-				push_warning("Sequencia com menos de %d elementos: %s"
+				push_warning("Sequência com menos de %d elementos: %s"
 						% [MIN_SEQUENCE_LEN, str(s)])
 			clean.append(s)
 	if clean.is_empty():
@@ -49,7 +49,7 @@ func next_symbol() -> String:
 	return str(seq[step % seq.size()])
 
 
-## A sequencia atual ja foi concluida (usou o ultimo item) e pode transicionar?
+## A sequência atual ja foi concluída (usou o último item) e pode transicionar?
 func sequence_completed() -> bool:
 	var seq: Array = current_sequence()
 	if seq.is_empty():
@@ -57,7 +57,7 @@ func sequence_completed() -> bool:
 	return step > 0 and step % seq.size() == 0
 
 
-## O jogador so avanca para celula adjacente cujo token casa com a sequencia.
+## O jogador so avança para célula adjacente cujo token casa com a sequência.
 func can_move(from: Vector2i, to: Vector2i) -> bool:
 	if not matrix.is_inside(to):
 		return false
@@ -67,7 +67,7 @@ func can_move(from: Vector2i, to: Vector2i) -> bool:
 	if LevelMatrix.is_end(sym):
 		return all_visited()
 	if LevelMatrix.is_special(sym):
-		# Exige ter usado o ultimo item da sequencia antes de transicionar.
+		# Exige ter usado o último item da sequência antes de transicionar.
 		return sequence_completed()
 	if LevelMatrix.is_start(sym):
 		return true
@@ -90,7 +90,7 @@ func register_arrival(to: Vector2i) -> void:
 		step += 1
 
 
-## Todas as posicoes obrigatorias (validas, exceto o Fim) ja visitadas?
+## Todas as posições obrigatórias (válidas, exceto o Fim) ja visitadas?
 func all_visited() -> bool:
 	for p in matrix.required_positions():
 		if not visited.has(p):

@@ -23,7 +23,7 @@ func _ready() -> void:
 	col.add_child(title)
 
 	var subtitle := Label.new()
-	subtitle.text = "Siga a sequencia e chegue ao fim passando por tudo!"
+	subtitle.text = "Siga a sequência e chegue ao fim passando por tudo!"
 	subtitle.horizontal_alignment = HORIZONTAL_ALIGNMENT_CENTER
 	subtitle.autowrap_mode = TextServer.AUTOWRAP_WORD_SMART
 	subtitle.add_theme_font_size_override("font_size", 24)
@@ -36,7 +36,7 @@ func _ready() -> void:
 	play.pressed.connect(_on_play)
 	col.add_child(play)
 
-	var settings := StyleFactory.make_button("Configuracoes", Color("b983ff"), 34)
+	var settings := StyleFactory.make_button("Configurações", Color("b983ff"), 34)
 	settings.pressed.connect(func() -> void:
 		get_tree().change_scene_to_file("res://scenes/ui/Settings.tscn"))
 	col.add_child(settings)

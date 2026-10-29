@@ -1,6 +1,6 @@
 class_name StyleFactory
 extends RefCounted
-## Fabrica de estilos "organicos" (bordas muito arredondadas, sombras suaves).
+## Fabrica de estilos "orgânicos" (bordas muito arredondadas, sombras suaves).
 ## Direcao de arte: nada de cantos secos, linhas retas nem fundos brancos,
 ## pretos ou cinzas - apenas cores vivas.
 
@@ -22,13 +22,13 @@ const HIGHLIGHT := Color("ffe24d")
 
 # Cores de UI (todas coloridas - sem branco/preto/cinza).
 const CARD := Color("5a2aa6", 0.50)          # painel violeta translucido
-const OVERLAY_DIM := Color("3a1c5a", 0.74)   # escurecimento violeta (nao preto)
-const WIN_PANEL := Color("7c5cff")           # painel de vitoria
-const SHADOW := Color("2a0f4a", 0.32)        # sombra violeta (nao preta)
+const OVERLAY_DIM := Color("3a1c5a", 0.74)   # escurecimento violeta (não preto)
+const WIN_PANEL := Color("7c5cff")           # painel de vitória
+const SHADOW := Color("2a0f4a", 0.32)        # sombra violeta (não preta)
 const HINT := Color("7c5cff", 0.38)          # caixa de dica
 
 
-## Cor de um simbolo/token. Aceita tokens arbitrarios ("10", "K", "P"...).
+## Cor de um símbolo/token. Aceita tokens arbitrarios ("10", "K", "P"...).
 static func color_for(symbol: String) -> Color:
 	if COLORS.has(symbol):
 		var c: Color = COLORS[symbol]
@@ -53,7 +53,7 @@ static func rounded_panel(color: Color, radius: int = 40) -> StyleBoxFlat:
 	return sb
 
 
-## Painel "organico": cada canto com raio diferente + sombra colorida.
+## Painel "orgânico": cada canto com raio diferente + sombra colorida.
 static func organic_panel(color: Color, radius: int = 48) -> StyleBoxFlat:
 	var sb := StyleBoxFlat.new()
 	sb.bg_color = color

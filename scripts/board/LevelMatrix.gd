@@ -2,7 +2,7 @@ class_name LevelMatrix
 extends RefCounted
 ## Le e interpreta a matriz alfanumerica de uma fase.
 ##
-## Cada linha pode ser escrita como tokens separados por espaco (permite
+## Cada linha pode ser escrita como tokens separados por espaço (permite
 ## tokens de mais de um caractere, ex.: "10", "K", "P") OU como caracteres
 ## colados (ex.: "XXX43XXXX"). As quebras de linha definem as linhas.
 
@@ -60,9 +60,9 @@ func _init(raw: Array) -> void:
 		cells.append(line)
 
 	if not found_start:
-		push_warning("Fase sem posicao inicial 'A'; usando (0,0).")
+		push_warning("Fase sem posição inicial 'A'; usando (0,0).")
 	if end_pos == Vector2i(-1, -1):
-		push_warning("Fase sem posicao final 'B'.")
+		push_warning("Fase sem posição final 'B'.")
 
 
 static func is_empty(s: String) -> bool:
@@ -95,7 +95,7 @@ func is_valid(p: Vector2i) -> bool:
 	return is_inside(p) and not is_empty(symbol_at(p))
 
 
-## Todas as posicoes do retangulo.
+## Todas as posições do retângulo.
 func all_positions() -> Array[Vector2i]:
 	var out: Array[Vector2i] = []
 	for y in rows:
@@ -104,7 +104,7 @@ func all_positions() -> Array[Vector2i]:
 	return out
 
 
-## Posicoes validas para o jogador pisar.
+## Posições válidas para o jogador pisar.
 func valid_positions() -> Array[Vector2i]:
 	var out: Array[Vector2i] = []
 	for p in all_positions():
@@ -113,7 +113,7 @@ func valid_positions() -> Array[Vector2i]:
 	return out
 
 
-## Posicoes obrigatorias: todas as validas, exceto o Fim.
+## Posições obrigatórias: todas as válidas, exceto o Fim.
 func required_positions() -> Array[Vector2i]:
 	var out: Array[Vector2i] = []
 	for p in valid_positions():

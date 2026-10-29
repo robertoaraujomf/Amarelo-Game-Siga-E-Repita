@@ -1,7 +1,7 @@
 class_name Hud
 extends CanvasLayer
-## HUD: titulo da fase, sequencia atual, proxima posicao especial, controles
-## (D-pad ou dica de swipe), botoes de desfazer/reiniciar e overlay de vitoria.
+## HUD: título da fase, sequência atual, próxima posição especial, controles
+## (D-pad ou dica de swipe), botões de desfazer/reiniciar e overlay de vitória.
 
 signal back_pressed
 signal dpad(direction: Vector2i)
@@ -56,7 +56,7 @@ func _build_top() -> void:
 	inner.add_theme_constant_override("separation", 12)
 	panel.add_child(inner)
 
-	# Cabecalho: voltar + titulo
+	# Cabeçalho: voltar + título
 	var header := HBoxContainer.new()
 	header.add_theme_constant_override("separation", 12)
 	inner.add_child(header)
@@ -76,9 +76,9 @@ func _build_top() -> void:
 	_title.autowrap_mode = TextServer.AUTOWRAP_WORD_SMART
 	header.add_child(_title)
 
-	# Sequencia de imagens
+	# Sequência de imagens
 	var caption := Label.new()
-	caption.text = "Sequencia atual"
+	caption.text = "Sequência atual"
 	caption.add_theme_font_size_override("font_size", 20)
 	caption.add_theme_color_override("font_color", Color(1, 1, 1, 0.8))
 	caption.horizontal_alignment = HORIZONTAL_ALIGNMENT_CENTER
@@ -108,7 +108,7 @@ func _build_top() -> void:
 
 
 func _build_controls() -> void:
-	# Espaco elastico: empurra os controles para o rodape, liberando o mapa.
+	# Espaço elástico: empurra os controles para o rodapé, liberando o mapa.
 	var spacer := Control.new()
 	spacer.size_flags_vertical = Control.SIZE_EXPAND_FILL
 	spacer.mouse_filter = Control.MOUSE_FILTER_IGNORE
@@ -127,7 +127,7 @@ func _build_controls() -> void:
 	col.add_theme_constant_override("separation", 16)
 	inner.add_child(col)
 
-	# Botoes de acao (sempre visiveis)
+	# Botões de ação (sempre visiveis)
 	var action_row := HBoxContainer.new()
 	action_row.alignment = BoxContainer.ALIGNMENT_CENTER
 	action_row.add_theme_constant_override("separation", 14)
@@ -242,14 +242,14 @@ func _build_overlay() -> void:
 	margin.add_child(col)
 
 	var title := Label.new()
-	title.text = "Fase concluida!"
+	title.text = "Fase concluída!"
 	title.add_theme_font_size_override("font_size", 40)
 	title.add_theme_color_override("font_color", Color("ffe24d"))
 	title.horizontal_alignment = HORIZONTAL_ALIGNMENT_CENTER
 	col.add_child(title)
 
 	var star := Label.new()
-	star.text = "Voce passou por todas as posicoes!"
+	star.text = "Você passou por todas as posições!"
 	star.add_theme_font_size_override("font_size", 20)
 	star.add_theme_color_override("font_color", Color(1, 1, 1, 0.9))
 	star.horizontal_alignment = HORIZONTAL_ALIGNMENT_CENTER
@@ -265,14 +265,14 @@ func _build_overlay() -> void:
 
 
 # ------------------------------------------------------------------ API
-## Altura da HUD no topo, em pixels (para a camera nao cobrir o jogador).
+## Altura da HUD no topo, em pixels (para a câmera não cobrir o jogador).
 func top_margin() -> float:
 	if _top_panel == null:
 		return 0.0
 	return _top_panel.global_position.y + _top_panel.size.y
 
 
-## Altura da HUD no rodape, em pixels.
+## Altura da HUD no rodapé, em pixels.
 func bottom_margin() -> float:
 	if _bottom_panel == null:
 		return 0.0

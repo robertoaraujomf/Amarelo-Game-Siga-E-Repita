@@ -1,6 +1,6 @@
 class_name Player
 extends Node2D
-## Personagem (blob fofo). A movimentacao e tweenada pelo Board.
+## Personagem (blob fofo). A movimentação é tweenada pelo Board.
 
 signal arrived
 

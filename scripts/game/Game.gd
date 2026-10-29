@@ -9,7 +9,7 @@ var _camera_ready := false
 
 
 func _ready() -> void:
-	# Nao permite abrir uma fase fora de ordem (pular fases).
+	# Não permite abrir uma fase fora de ordem (pular fases).
 	if not GameState.is_completed(GameState.current_level_id) \
 			and GameState.current_level_id != GameState.next_level_id():
 		get_tree().change_scene_to_file("res://scenes/ui/LevelSelect.tscn")
@@ -51,8 +51,8 @@ func _process(_delta: float) -> void:
 		board.refresh_camera()
 
 
-## Informa ao tabuleiro quanto de tela a HUD ocupa no topo/rodape, para a
-## camera manter o jogador na faixa livre entre os paineis.
+## Informa ao tabuleiro quanto de tela a HUD ocupa no topo/rodapé, para a
+## câmera manter o jogador na faixa livre entre os paineis.
 func _sync_view_margins() -> void:
 	if board == null or hud == null:
 		return

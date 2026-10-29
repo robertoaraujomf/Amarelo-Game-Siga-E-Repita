@@ -32,7 +32,7 @@ func is_unlocked(id: int) -> bool:
 	return completed.has(id - 1)
 
 
-## Proxima fase jogavel: menor id ainda nao concluido (progressao linear).
+## Próxima fase jogável: menor id ainda não concluído (progressão linear).
 func next_level_id() -> int:
 	var id := 1
 	while completed.has(id):
@@ -46,6 +46,13 @@ func level_status(id: int) -> String:
 	if id == next_level_id():
 		return "current"
 	return "locked"
+
+
+## Zera o progresso: volta para a fase 1 e apaga o andamento do mapa.
+func reset_progress() -> void:
+	current_level_id = 1
+	completed.clear()
+	save_progress()
 
 
 func save_progress() -> void:

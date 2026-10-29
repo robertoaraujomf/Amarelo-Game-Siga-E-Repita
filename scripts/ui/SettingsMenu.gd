@@ -1,5 +1,5 @@
 extends Control
-## Tela de configuracoes: metodo de controle e feedback.
+## Tela de configurações: método de controle e feedback.
 
 var _swipe_btn: Button
 var _arrows_btn: Button
@@ -21,14 +21,14 @@ func _ready() -> void:
 	margin.add_child(col)
 
 	var title := Label.new()
-	title.text = "Configuracoes"
+	title.text = "Configurações"
 	title.horizontal_alignment = HORIZONTAL_ALIGNMENT_CENTER
 	title.add_theme_font_size_override("font_size", 48)
 	title.add_theme_color_override("font_color", Color.WHITE)
 	col.add_child(title)
 
 	var caption := Label.new()
-	caption.text = "Metodo de controle"
+	caption.text = "Método de controle"
 	caption.horizontal_alignment = HORIZONTAL_ALIGNMENT_CENTER
 	caption.add_theme_font_size_override("font_size", 24)
 	caption.add_theme_color_override("font_color", Color(1, 1, 1, 0.85))
@@ -46,7 +46,7 @@ func _ready() -> void:
 		_refresh())
 	col.add_child(_arrows_btn)
 
-	_haptics_btn = StyleFactory.make_button("Vibracao", Color("b983ff"), 30)
+	_haptics_btn = StyleFactory.make_button("Vibração", Color("b983ff"), 30)
 	_haptics_btn.pressed.connect(func() -> void:
 		Settings.toggle_haptics()
 		_refresh())
@@ -63,7 +63,7 @@ func _ready() -> void:
 func _refresh() -> void:
 	_mark(_swipe_btn, Settings.control_mode == Settings.ControlMode.SWIPE)
 	_mark(_arrows_btn, Settings.control_mode == Settings.ControlMode.ARROWS)
-	_haptics_btn.text = "Vibracao: %s" % ("ligada" if Settings.haptics_enabled else "desligada")
+	_haptics_btn.text = "Vibração: %s" % ("ligada" if Settings.haptics_enabled else "desligada")
 
 
 func _mark(btn: Button, selected: bool) -> void:

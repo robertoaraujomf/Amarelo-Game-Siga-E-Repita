@@ -1,6 +1,6 @@
 extends Control
-## Tela de selecao/transicao de fases: uma TRILHA serpenteante onde cada "no"
-## representa uma fase (concluida / atual / proxima / bloqueada).
+## Tela de seleção/transição de fases: uma TRILHA serpenteante onde cada "no"
+## representa uma fase (concluída / atual / próxima / bloqueada).
 
 func _ready() -> void:
 	add_child(Background.new())
@@ -15,7 +15,7 @@ func _ready() -> void:
 	col.add_theme_constant_override("separation", 14)
 	margin.add_child(col)
 
-	# Cabecalho
+	# Cabeçalho
 	var header := HBoxContainer.new()
 	header.add_theme_constant_override("separation", 12)
 	col.add_child(header)
@@ -44,6 +44,13 @@ func _ready() -> void:
 	trail.selected.connect(_on_selected)
 	trail.build(Levels.levels, GameState)
 	scroll.add_child(trail)
+
+	var reset := StyleFactory.make_button("Zerar progresso", Color("ff6b6b"), 28)
+	reset.custom_minimum_size = Vector2(0, 72)
+	reset.pressed.connect(func() -> void:
+		GameState.reset_progress()
+		get_tree().change_scene_to_file("res://scenes/ui/LevelSelect.tscn"))
+	col.add_child(reset)
 
 
 func _on_selected(level_id: int) -> void:

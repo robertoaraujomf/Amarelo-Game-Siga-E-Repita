@@ -14,7 +14,7 @@ func _load_levels() -> void:
 	levels.clear()
 	var dir := DirAccess.open(LEVELS_DIR)
 	if dir == null:
-		push_warning("Pasta de niveis nao encontrada: %s" % LEVELS_DIR)
+		push_warning("Pasta de níveis não encontrada: %s" % LEVELS_DIR)
 		return
 
 	var files: Array[String] = []

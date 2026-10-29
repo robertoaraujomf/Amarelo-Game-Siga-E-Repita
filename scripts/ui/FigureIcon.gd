@@ -1,8 +1,8 @@
 class_name FigureIcon
 extends Control
 ## Desenha a "figura" de um token exatamente como no tabuleiro (sparkle para a
-## posicao especial, casa para o inicio, estrela para o fim, texto para tokens).
-## Usado pelas instrucoes da HUD para o alvo bater com o que aparece no mapa.
+## posição especial, casa para o Início, estrela para o fim, texto para tokens).
+## Usado pelas instruções da HUD para o alvo bater com o que aparece no mapa.
 
 var symbol: String = "":
 	set(value):

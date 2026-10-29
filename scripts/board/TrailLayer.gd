@@ -29,6 +29,6 @@ func _draw() -> void:
 			pts.append(_cell_center(p))
 		draw_polyline(pts, col, cell_size * 0.22, true)
 
-	# Juntas arredondadas para a linha nao ter cantos secos.
+	# Juntas arredondadas para a linha não ter cantos secos.
 	for p in cells:
 		draw_circle(_cell_center(p), cell_size * 0.11, col)

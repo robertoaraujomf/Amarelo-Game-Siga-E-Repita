@@ -1,5 +1,5 @@
 extends Node
-## Autoload "Settings" - preferencias do jogador (metodo de controle, etc).
+## Autoload "Settings" - preferências do jogador (método de controle, etc).
 
 enum ControlMode { SWIPE, ARROWS }
 
@@ -15,8 +15,8 @@ func _ready() -> void:
 	load_settings()
 
 
-## Cria as acoes de input programaticamente (setas + WASD) para nao depender
-## de serializacao no project.godot.
+## Cria as ações de input programaticamente (setas + WASD) para não depender
+## de serialização no project.godot.
 func _register_input_actions() -> void:
 	var map := {
 		"move_up": [KEY_UP, KEY_W],

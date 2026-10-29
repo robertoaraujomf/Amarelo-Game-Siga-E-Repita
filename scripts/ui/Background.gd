@@ -1,6 +1,6 @@
 class_name Background
 extends Control
-## Fundo gradiente colorido com "bolhas" organicas. Nunca usa branco/preto/cinza
+## Fundo gradiente colorido com "bolhas" orgânicas. Nunca usa branco/preto/cinza
 ## como fundo: apenas tons de roxo, rosa, laranja e amarelo.
 
 const TOP := Color("5b2a86")

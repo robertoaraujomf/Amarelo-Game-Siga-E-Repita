@@ -1,6 +1,6 @@
 class_name Tile
 extends Node2D
-## Celula do tabuleiro: desenha uma forma organica arredondada + icone/token.
+## Célula do tabuleiro: desenha uma forma orgânica arredondada + ícone/token.
 
 var symbol: String = "."
 var cell_size: float = 96.0
@@ -23,13 +23,13 @@ func _draw() -> void:
 	var rect := Rect2(Vector2(-r, -r), Vector2(r * 2.0, r * 2.0))
 	var base := StyleFactory.color_for(symbol)
 
-	# Corpo organico (bem arredondado, cantos irregulares).
+	# Corpo orgânico (bem arredondado, cantos irregulares).
 	draw_style_box(StyleFactory.organic_panel(base, int(r * 0.85)), rect)
 
-	# Brilho superior (aspecto de bala/gelatina) - highlight, nao fundo.
+	# Brilho superior (aspecto de bala/gelatina) - highlight, não fundo.
 	draw_circle(Vector2(-r * 0.30, -r * 0.34), r * 0.30, Color(1, 1, 1, 0.26))
 
-	# Anel interno indicando que a posicao ja foi visitada.
+	# Anel interno indicando que a posição ja foi visitada.
 	if visited:
 		draw_arc(Vector2.ZERO, r * 0.74, 0.0, TAU, 40, Color(1, 1, 1, 0.5), r * 0.10, true)
 
@@ -96,28 +96,28 @@ func _draw_star(r: float, c: Color) -> void:
 	draw_colored_polygon(pts, c)
 
 
-## Sinalizacao constante do Inicio (anel ciano pulsante).
+## Sinalização constante do Início (anel ciano pulsante).
 func _draw_start_marker(r: float) -> void:
 	var pulse := 0.6 + 0.4 * sin(_time * 3.0)
 	draw_arc(Vector2.ZERO, r * 1.02, 0.0, TAU, 48,
 			Color(0.18, 0.77, 0.71, 0.25 + 0.35 * pulse), r * 0.14, true)
 
 
-## Sinalizacao constante do Fim (anel rosa pulsante).
+## Sinalização constante do Fim (anel rosa pulsante).
 func _draw_end_marker(r: float) -> void:
 	var pulse := 0.5 + 0.5 * sin(_time * 3.0 + PI)
 	draw_arc(Vector2.ZERO, r * 1.05, 0.0, TAU, 48,
 			Color(1.0, 0.36, 0.64, 0.30 + 0.40 * pulse), r * 0.16, true)
 
 
-## Dica do proximo alvo (casou com a sequencia atual).
+## Dica do próximo alvo (casou com a sequência atual).
 func _draw_next_hint(r: float) -> void:
 	var pulse := 0.5 + 0.5 * sin(_time * 6.0)
 	draw_arc(Vector2.ZERO, r * 0.98, 0.0, TAU, 48,
 			Color(1, 1, 1, 0.15 + 0.5 * pulse), r * 0.09, true)
 
 
-## Borda amarela, brilhante e piscando na posicao atual do player.
+## Borda amarela, brilhante e piscando na posição atual do player.
 func _draw_player_halo(r: float) -> void:
 	var t := _time * 5.0
 	for i in 4:

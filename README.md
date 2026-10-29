@@ -80,11 +80,11 @@ Fase 1 (uma sequência):
   "id": 1,
   "sequences": [["1", "2", "3", "4"]],
   "matrix": [
-    "XXX43XXXX",
-    "XXX12XXXX",
-    "XXX21XXXX",
-    "A1234XXXX",
-    "XXX41234B"
+	"XXX43XXXX",
+	"XXX12XXXX",
+	"XXX21XXXX",
+	"A1234XXXX",
+	"XXX41234B"
   ]
 }
 ```
@@ -96,9 +96,9 @@ Fase 3 (múltiplas sequências + posição especial, com letras):
   "id": 3,
   "sequences": [["1", "3", "K", "9"], ["2", "P", "5", "7", "8"]],
   "matrix": [
-    "A13K",
-    "P2E9",
-    "578B"
+	"A13K",
+	"P2E9",
+	"578B"
   ]
 }
 ```
@@ -114,11 +114,11 @@ siga-e-repita/
 │   ├── ui/                  # MainMenu, LevelSelect, Settings
 │   └── game/                # Game (Board + HUD)
 └── scripts/
-    ├── autoload/            # GameState, Levels, Settings
-    ├── board/               # LevelMatrix, PuzzleRules, Tile, TrailLayer, Player, Board
-    ├── game/                # Game (wiring Board <-> HUD)
-    ├── ui/                  # Hud, Background, LevelTrail, telas
-    └── util/                # StyleFactory (formas organicas / paleta)
+	├── autoload/            # GameState, Levels, Settings
+	├── board/               # LevelMatrix, PuzzleRules, Tile, TrailLayer, Player, Board
+	├── game/                # Game (wiring Board <-> HUD)
+	├── ui/                  # Hud, Background, LevelTrail, telas
+	└── util/                # StyleFactory (formas organicas / paleta)
 ```
 
 ## 6. Versionamento com Git
