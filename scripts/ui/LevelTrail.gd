@@ -114,7 +114,7 @@ func _draw_node(e: Dictionary) -> void:
 			glow = Color("ffb14d")
 			glow_a = 0.55
 		"locked":
-			glow = Color("8a6bf")
+			glow = Color("8a6fbf")
 			glow_a = 0.18
 		_:
 			glow = Color("4d96ff")
