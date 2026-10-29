@@ -1,23 +1,25 @@
 class_name OrganicButton
 extends Button
-## Botao com fundo em GRADIENTE (nunca cor solida) e formato organico (blob).
+## Botao com fundo em GRADIENTE (shader com gradiente vertical, nunca cor solida).
 
 var _bg := Color(0.42, 0.16, 0.64)
+var _mat: ShaderMaterial
+
+
+func _ready() -> void:
+	var mat := ShaderMaterial.new()
+	mat.shader = Shader.new()
+	var c := _bg
+	var light := c.lightened(0.30)
+	mat.shader.code = "shader_type canvas_item;\nuniform vec4 top_c = vec4(%.4f, %.4f, %.4f, 1.0);\nuniform vec4 bot_c = vec4(%.4f, %.4f, %.4f, 1.0);\nvoid fragment() { COLOR = mix(top_c, bot_c, UV.y); }" % [c.r, c.g, c.b, light.r, light.g, light.b]
+	_mat = mat
+	self.material = mat
 
 
 func _draw() -> void:
 	if size.x <= 0.0 or size.y <= 0.0:
 		return
-	var w := int(size.x)
-	var h := int(size.y)
-	var img := Image.create(w, h, false, Image.FORMAT_RGBA8)
-	var light := _bg.lightened(0.30)
-	for y in range(h):
-		img.set_pixel(int((size.x - 1) * float(y) / maxf(1.0, float(h - 1.0))), y, _bg.lerp(light, float(y) / maxf(1.0, float(h - 1.0))))
-	var tex := ImageTexture.create_from_image(img)
-	draw_texture(tex, Vector2.ZERO, Color(1, 1, 1, 1))
-
-	# Texto do botao por cima do gradiente.
+	# Fundo via material (shader com gradiente); aqui desenhamos o texto.
 	var font: Font = get_theme_font("font")
 	var fs: float = float(get_theme_font_size("font_size"))
 	var txt := str(text)
@@ -33,4 +35,10 @@ func _notification(what: int) -> void:
 
 func set_bg(c: Color) -> void:
 	_bg = c
+	var mat := ShaderMaterial.new()
+	mat.shader = Shader.new()
+	var light := c.lightened(0.30)
+	mat.shader.code = "shader_type canvas_item;\nuniform vec4 top_c = vec4(%.4f, %.4f, %.4f, 1.0);\nuniform vec4 bot_c = vec4(%.4f, %.4f, %.4f, 1.0);\nvoid fragment() { COLOR = mix(top_c, bot_c, UV.y); }" % [c.r, c.g, c.b, light.r, light.g, light.b]
+	_mat = mat
+	self.material = mat
 	queue_redraw()
