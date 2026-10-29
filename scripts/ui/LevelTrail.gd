@@ -82,7 +82,7 @@ func _draw() -> void:
 		var pts := _trail_path()
 		draw_polyline(pts, Color(StyleFactory.TRAIL, 0.5), 22.0, true)
 		for e in _entries:
-			_draw_blob(e["pos"], 11.0, Color(StyleFactory.TRAIL, 0.5))
+			draw_circle(e["pos"], 11.0, Color(StyleFactory.TRAIL, 0.5))
 
 	for e in _entries:
 		_draw_node(e)
@@ -119,17 +119,17 @@ func _draw_node(e: Dictionary) -> void:
 		_:
 			glow = Color("4d96ff")
 			glow_a = 0.0
-	# Brilho colorido + sombra suave por baixo do globo da fase (sem circulos perfeitos).
-	_draw_blob(pos + Vector2(0, 10.0), r * 1.30, Color(glow, glow_a))
-	_draw_blob(pos + Vector2(0, 10.0), r * 1.22, Color("2a0f4a", 0.30))
-	_draw_blob(pos, r, col)
-	_draw_blob(pos + Vector2(-r * 0.28, -r * 0.30), r * 0.34, Color(1, 1, 1, 0.25))
+	# Brilho colorido + sombra suave por baixo do globo da fase.
+	draw_circle(pos + Vector2(0, 10.0), r * 1.30, Color(glow, glow_a))
+	draw_circle(pos + Vector2(0, 10.0), r * 1.22, Color("2a0f4a", 0.30))
+	draw_circle(pos, r, col)
+	draw_circle(pos + Vector2(-r * 0.28, -r * 0.30), r * 0.34, Color(1, 1, 1, 0.25))
 
 	if status == "current":
 		var pulse := 0.5 + 0.5 * sin(_time * 5.0)
-		_draw_blob(pos, r * (1.05 + 0.14 * pulse), Color(StyleFactory.HIGHLIGHT, glow_a * (0.35 + 0.65 * pulse)))
+		draw_arc(pos, r * (1.05 + 0.14 * pulse), 0.0, TAU, 56, Color(StyleFactory.HIGHLIGHT, glow_a * (0.35 + 0.65 * pulse)), 8.0, true)
 	elif status == "completed":
-		_draw_blob(pos, r * 1.16, Color("b8ffb0", glow_a))
+		draw_arc(pos, r * 1.16, 0.0, TAU, 56, Color("b8ffb0", glow_a), 6.0, true)
 
 	# Numero da fase
 	var font := ThemeDB.fallback_font
@@ -160,21 +160,6 @@ func _draw_node(e: Dictionary) -> void:
 
 	if status == "locked":
 		_draw_lock(pos)
-
-
-func _draw_blob(center: Vector2, radius: float, color: Color) -> void:
-	# "Blob" organico: superelipse com n variando (nunca um circulo perfeito).
-	var n := 3.0
-	var pts := PackedVector2Array()
-	var count := 32
-	for i in count:
-		var a := TAU * float(i) / float(count) - PI / 2.0
-		var c := cos(a)
-		var s := sin(a)
-		var x := signf(c) * pow(absf(c), 2.0 / n) * radius
-		var y := signf(s) * pow(absf(s), 2.0 / n) * radius
-		pts.append(center + Vector2(x, y))
-	draw_colored_polygon(pts, color)
 
 
 func _draw_lock(pos: Vector2) -> void:

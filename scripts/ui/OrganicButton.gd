@@ -17,6 +17,14 @@ func _draw() -> void:
 	var tex := ImageTexture.create_from_image(img)
 	draw_texture(tex, Vector2.ZERO, Color(1, 1, 1, 1))
 
+	# Texto do botao por cima do gradiente.
+	var font: Font = get_theme_font("font")
+	var fs: float = float(get_theme_font_size("font_size"))
+	var txt := str(text)
+	var sz := font.get_string_size(txt, HORIZONTAL_ALIGNMENT_LEFT, -1, fs)
+	draw_string(font, Vector2(size.x / 2.0 - sz.x / 2.0, size.y / 2.0 - fs * 0.36), txt,
+			HORIZONTAL_ALIGNMENT_LEFT, -1, fs, Color(1, 1, 1, 1))
+
 
 func _notification(what: int) -> void:
 	if what == NOTIFICATION_DISABLED or what == NOTIFICATION_THEME_CHANGED or what == NOTIFICATION_RESIZED:
