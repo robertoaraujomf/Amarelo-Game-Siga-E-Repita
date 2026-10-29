@@ -80,9 +80,9 @@ static func make_button(text: String, color: Color, font_size: int = 34) -> Butt
 	b.add_theme_color_override("font_hover_color", Color.WHITE)
 	b.add_theme_color_override("font_pressed_color", Color.WHITE)
 	b.add_theme_color_override("font_disabled_color", Color(1, 1, 1, 0.55))
-	b.add_theme_stylebox_override("normal", rounded_panel(color, 40))
-	b.add_theme_stylebox_override("hover", rounded_panel(color.lightened(0.10), 40))
-	b.add_theme_stylebox_override("pressed", rounded_panel(color.darkened(0.12), 40))
+	b.add_theme_stylebox_override("normal", organic_panel(color, 44))
+	b.add_theme_stylebox_override("hover", organic_panel(color.lightened(0.10), 44))
+	b.add_theme_stylebox_override("pressed", organic_panel(color.darkened(0.12), 44))
 	b.add_theme_stylebox_override("focus", StyleBoxEmpty.new())
-	b.add_theme_stylebox_override("disabled", rounded_panel(color.darkened(0.30), 40))
+	b.add_theme_stylebox_override("disabled", organic_panel(color.darkened(0.30), 44))
 	return b
