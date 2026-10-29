@@ -69,7 +69,7 @@ static func organic_panel(color: Color, radius: int = 48) -> StyleBoxFlat:
 	return sb
 
 
-## Botao padrao do jogo (arredondado, colorido, estilo infantil).
+## Botão padrão do jogo (orgânico, colorido, estilo infantil).
 static func make_button(text: String, color: Color, font_size: int = 34) -> Button:
 	var b := Button.new()
 	b.text = text
@@ -80,9 +80,9 @@ static func make_button(text: String, color: Color, font_size: int = 34) -> Butt
 	b.add_theme_color_override("font_hover_color", Color.WHITE)
 	b.add_theme_color_override("font_pressed_color", Color.WHITE)
 	b.add_theme_color_override("font_disabled_color", Color(1, 1, 1, 0.55))
-	b.add_theme_stylebox_override("normal", organic_panel(color, 44))
-	b.add_theme_stylebox_override("hover", organic_panel(color.lightened(0.10), 44))
-	b.add_theme_stylebox_override("pressed", organic_panel(color.darkened(0.12), 44))
+	b.add_theme_stylebox_override("normal", organic_panel(color, 58))
+	b.add_theme_stylebox_override("hover", organic_panel(color.lightened(0.10), 54))
+	b.add_theme_stylebox_override("pressed", organic_panel(color.darkened(0.12), 60))
 	b.add_theme_stylebox_override("focus", StyleBoxEmpty.new())
-	b.add_theme_stylebox_override("disabled", organic_panel(color.darkened(0.30), 44))
+	b.add_theme_stylebox_override("disabled", organic_panel(color.darkened(0.30), 50))
 	return b
