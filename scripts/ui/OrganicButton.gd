@@ -13,7 +13,7 @@ func _draw() -> void:
 	var img := Image.create(w, h, false, Image.FORMAT_RGBA8)
 	var light := _bg.lightened(0.30)
 	for y in range(h):
-		img.set_pixel(int(size.x * float(y) / maxf(1.0, float(h - 1.0))), y, _bg.lerp(light, float(y) / maxf(1.0, float(h - 1.0))))
+		img.set_pixel(int((size.x - 1) * float(y) / maxf(1.0, float(h - 1.0))), y, _bg.lerp(light, float(y) / maxf(1.0, float(h - 1.0))))
 	var tex := ImageTexture.create_from_image(img)
 	draw_texture(tex, Vector2.ZERO, Color(1, 1, 1, 1))
 
