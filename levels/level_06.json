@@ -1,0 +1,12 @@
+{
+  "id": 6,
+  "sequences": [["L", "8", "P", "1"]],
+  "matrix": [
+    "& L 8 P 1 L 8 P 8 P 1 br",
+    "X X X X X X P 1 L 8 L br",
+    "X X X X X X 8 L 1 P X br",
+    "X X X X X X X X L X X br",
+    "X X X X X X X X 8 P 1 br",
+    "X X X X X X X X X X § br"
+  ]
+}

@@ -38,7 +38,12 @@ var _trail_cells: Array[Vector2i] = []
 var _is_moving := false
 var _pending_win := false
 var _swipe_start := Vector2.ZERO
+var _swipe_current_pos := Vector2.ZERO
+var _swipe_last_pos := Vector2.ZERO
 var _swipe_active := false
+var _swipe_dir := Vector2i.ZERO
+var _swipe_touch_index := -1
+var _mouse_swiping := false
 var _history: Array = []            # snapshots para "desfazer"
 
 
@@ -134,6 +139,38 @@ func _process(_delta: float) -> void:
 	if camera == null or player == null:
 		return
 	camera.position = _camera_target()
+	if _swipe_active and matrix != null:
+		var d_from_start := _swipe_current_pos - _swipe_start
+		var d_dir := _swipe_current_pos - _swipe_last_pos
+		_swipe_last_pos = _swipe_current_pos
+		var candidate_dir := _swipe_dir
+		if d_dir.length() >= 4.0 or d_from_start.length() >= SWIPE_MIN_DISTANCE:
+			var dd := d_dir
+			if dd.length() < 1.0:
+				dd = d_from_start
+			if dd.length() >= 1.0:
+				if absf(dd.x) >= absf(dd.y):
+					candidate_dir = Vector2i(int(signf(dd.x)), 0)
+				else:
+					candidate_dir = Vector2i(0, int(signf(dd.y)))
+		if candidate_dir != Vector2i.ZERO:
+			_swipe_dir = candidate_dir
+			if not _is_moving:
+				var target := player_cell + _swipe_dir
+				if matrix.is_inside(target) and rules.can_move(player_cell, target):
+					try_move(_swipe_dir)
+				else:
+					_swipe_active = false
+					_swipe_dir = Vector2i.ZERO
+					_swipe_touch_index = -1
+					_mouse_swiping = false
+		elif d_from_start.length() < SWIPE_MIN_DISTANCE:
+			pass
+		else:
+			_swipe_active = false
+			_swipe_dir = Vector2i.ZERO
+			_swipe_touch_index = -1
+			_mouse_swiping = false
 
 
 ## Segue o jogador suavemente, sem deformar proporcao, respeitando as margens
@@ -182,30 +219,71 @@ func refresh_camera() -> void:
 
 # ------------------------------------------------------------------- input
 func _unhandled_input(event: InputEvent) -> void:
-	if matrix == null or _is_moving:
+	if matrix == null:
 		return
 
-	if event.is_action_pressed("move_up"):
-		try_move(Vector2i(0, -1)); return
-	if event.is_action_pressed("move_down"):
-		try_move(Vector2i(0, 1)); return
-	if event.is_action_pressed("move_left"):
-		try_move(Vector2i(-1, 0)); return
-	if event.is_action_pressed("move_right"):
-		try_move(Vector2i(1, 0)); return
+	if event is InputEventMouseButton:
+		if event.button_index == MOUSE_BUTTON_LEFT:
+			if event.pressed:
+				_swipe_start = event.position
+				_swipe_current_pos = event.position
+				_swipe_last_pos = event.position
+				_swipe_active = true
+				_mouse_swiping = true
+				_swipe_dir = Vector2i.ZERO
+				_swipe_touch_index = -1000
+			else:
+				_swipe_active = false
+				_mouse_swiping = false
+				_swipe_dir = Vector2i.ZERO
+				_swipe_touch_index = -1
 
 	if event is InputEventScreenTouch:
 		if event.pressed:
 			_swipe_start = event.position
+			_swipe_current_pos = event.position
+			_swipe_last_pos = event.position
 			_swipe_active = true
-		elif _swipe_active:
-			_swipe_active = false
-			_resolve_swipe(event.position - _swipe_start)
-	elif event is InputEventScreenDrag and _swipe_active:
-		var d: Vector2 = event.position - _swipe_start
-		if d.length() >= SWIPE_MIN_DISTANCE:
-			_swipe_active = false
-			_resolve_swipe(d)
+			_swipe_dir = Vector2i.ZERO
+			_swipe_touch_index = event.index
+		else:
+			if _swipe_active and ((_mouse_swiping and event.index == -1000) or event.index == _swipe_touch_index):
+				_swipe_active = false
+				_mouse_swiping = false
+				_swipe_dir = Vector2i.ZERO
+				_swipe_touch_index = -1
+	elif event is InputEventScreenDrag and _swipe_active and ((_mouse_swiping and event.index == -1000) or event.index == _swipe_touch_index):
+		_swipe_current_pos = event.position
+	elif event is InputEventMouseMotion and _swipe_active and _mouse_swiping:
+		_swipe_current_pos = event.position
+
+	if _is_moving and not (_swipe_active):
+		return
+
+	if event.is_action_pressed("move_up"):
+		_swipe_active = false
+		_swipe_dir = Vector2i.ZERO
+		_mouse_swiping = false
+		_swipe_touch_index = -1
+		try_move(Vector2i(0, -1)); return
+	if event.is_action_pressed("move_down"):
+		_swipe_active = false
+		_swipe_dir = Vector2i.ZERO
+		_mouse_swiping = false
+		_swipe_touch_index = -1
+		try_move(Vector2i(0, 1)); return
+	if event.is_action_pressed("move_left"):
+		_swipe_active = false
+		_swipe_dir = Vector2i.ZERO
+		_mouse_swiping = false
+		_swipe_touch_index = -1
+		try_move(Vector2i(-1, 0)); return
+	if event.is_action_pressed("move_right"):
+		_swipe_active = false
+		_swipe_dir = Vector2i.ZERO
+		_mouse_swiping = false
+		_swipe_touch_index = -1
+		try_move(Vector2i(1, 0)); return
 
 
 func _resolve_swipe(delta: Vector2) -> void:
@@ -245,6 +323,29 @@ func _on_player_arrived() -> void:
 	if _pending_win:
 		_pending_win = false
 		won.emit()
+		return
+	if _swipe_active and matrix != null:
+		var d_from_start := _swipe_current_pos - _swipe_start
+		var d_dir := _swipe_current_pos - _swipe_last_pos
+		var candidate_dir := _swipe_dir
+		var dd := d_dir
+		if dd.length() < 1.0:
+			dd = d_from_start
+		if dd.length() >= 1.0 and (d_from_start.length() >= SWIPE_MIN_DISTANCE or dd.length() >= 4.0):
+			if absf(dd.x) >= absf(dd.y):
+				candidate_dir = Vector2i(int(signf(dd.x)), 0)
+			else:
+				candidate_dir = Vector2i(0, int(signf(dd.y)))
+		if candidate_dir != Vector2i.ZERO:
+			_swipe_dir = candidate_dir
+			var target := player_cell + _swipe_dir
+			if matrix.is_inside(target) and rules.can_move(player_cell, target):
+				try_move(_swipe_dir)
+				return
+		_swipe_active = false
+		_swipe_dir = Vector2i.ZERO
+		_swipe_touch_index = -1
+		_mouse_swiping = false
 
 
 func _emit_blocked() -> void:

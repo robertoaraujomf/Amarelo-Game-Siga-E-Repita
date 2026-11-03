@@ -11,6 +11,8 @@ const START := "A"
 const END_PRIMARY := "B"      # marcador de fim padrao (Fase 1 usa "B")
 const END_ALT := "F"          # "F" tambem e aceito como fim (spec original)
 const SPECIAL := "E"
+const START_MARK := "&"       # marcador alternativo de Início (posição inicial)
+const END_MARK := "§"         # marcador alternativo de Fim (posição final)
 
 var rows: int = 0
 var cols: int = 0
@@ -21,28 +23,39 @@ var special_positions: Array[Vector2i] = []
 
 
 func _init(raw: Array) -> void:
-	rows = raw.size()
-
-	# Primeira passada: quebra cada linha em tokens e descobre a largura.
+	# "br" funciona como quebra de linha entre as linhas do mapa.
 	var token_rows: Array = []
-	var width := 0
-	for y in rows:
-		var row_str := str(raw[y]).strip_edges()
+	for row in raw:
+		var row_str := str(row).strip_edges()
 		var toks: Array = []
 		if row_str.contains(" "):
 			for t in row_str.split(" ", false):
-				toks.append(t)
+				toks.append(str(t))
 		else:
 			for ch in row_str:
 				toks.append(ch)
-		token_rows.append(toks)
-		width = maxi(width, toks.size())
+		var cur: Array = []
+		for t in toks:
+			var tt: String = str(t)
+			if tt == "br":
+				if not cur.is_empty():
+					token_rows.append(cur)
+					cur = []
+				continue
+			cur.append(tt)
+		if not cur.is_empty():
+			token_rows.append(cur)
+
+	rows = maxi(token_rows.size(), 1)
+	var width := 0
+	for toks in token_rows:
+		width = maxi(width, int(toks.size()))
 	cols = maxi(width, 1)
 
 	# Segunda passada: monta a grade e localiza os marcadores.
 	var found_start := false
-	for y in rows:
-		var toks: Array = token_rows[y]
+	var y := 0
+	for toks in token_rows:
 		var line: Array = []
 		for x in cols:
 			var tok := EMPTY
@@ -58,6 +71,7 @@ func _init(raw: Array) -> void:
 			elif is_special(tok):
 				special_positions.append(p)
 		cells.append(line)
+		y += 1
 
 	if not found_start:
 		push_warning("Fase sem posição inicial 'A'; usando (0,0).")
@@ -70,11 +84,11 @@ static func is_empty(s: String) -> bool:
 
 
 static func is_start(s: String) -> bool:
-	return s == "A"
+	return s == START or s == START_MARK
 
 
 static func is_end(s: String) -> bool:
-	return s == END_PRIMARY or s == END_ALT
+	return s == END_MARK or s == END_ALT
 
 
 static func is_special(s: String) -> bool:

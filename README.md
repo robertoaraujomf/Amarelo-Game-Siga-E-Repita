@@ -42,13 +42,15 @@ Botões na tela de jogo:
 Cada fase é um arquivo JSON em `levels/`. O campo `matrix` é a matriz lida
 **linha a linha** (cada string = uma linha). Cada linha pode ser escrita como
 **tokens separados por espaço** (permite tokens com mais de um caractere, ex.:
-`10`, `K`, `P`) ou como caracteres colados (ex.: `XXX43XXXX`).
+`10`, `K`, `P`) ou como caracteres colados (ex.: `XXX43XXXX`). As quebras de
+linha definem as linhas. A anotação `br` também pode ser usada como marcador de
+quebra de linha no final de cada linha.
 
 | Símbolo | Significado |
 |---------|-------------|
 | `X` ou `.` | Posição vazia / inválida (bloqueada) |
-| `A` | Início (posição inicial do jogador) |
-| `B` | Fim (objetivo). `F` também é aceito como fim |
+| `&` | Início (posição inicial do jogador). `A` também é aceito como início |
+| `B` / `F` / `§` | Fim (objetivo). `B` e `F` também são aceitos; `§` é o marcador alternativo |
 | `E` | Posição Especial: transição para a próxima sequência |
 | qualquer token | Item da sequência: números e/ou letras, fora de ordem |
 

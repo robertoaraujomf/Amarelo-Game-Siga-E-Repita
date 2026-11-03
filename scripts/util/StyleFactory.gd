@@ -11,8 +11,10 @@ const COLORS := {
 	"4": Color("4d96ff"),
 	"E": Color("b983ff"),
 	"A": Color("2ec4b6"),
+	"&": Color("2ec4b6"),      # Início alternativo (&)
 	"B": Color("ff5da2"),
 	"F": Color("ff5da2"),
+	"§": Color("ff5da2"),      # Fim alternativo (§)
 }
 
 const BG_TOP := Color("5b2a86")
