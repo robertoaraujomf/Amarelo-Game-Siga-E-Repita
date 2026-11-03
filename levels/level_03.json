@@ -2,8 +2,8 @@
   "id": 3,
   "sequences": [["B", "U", "1", "8"]],
   "matrix": [
-    "& U 1 8 X X X X X br",
-    "X X X B U X X X X br",
+    "B U 1 8 X X X X X br",
+    "& X X B U X X X X br",
     "X X X X 1 8 1 X X br",
     "X X X X X B U X X br",
     "X X X X X U 1 8 § br"
