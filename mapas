@@ -1,12 +1,89 @@
 FASE 1
 
-Posição inicial A
-Posição final B
-Células vazias X
-Sequência 1 2 3 4
+Considere X como posição vazia
+Considere br como quebra de linha
+& posição inicial
+§ posição final
+Sequência: 1234
 
-X X X 4 3 X X X X
-x X X 1 2 X X X X
-x X X 2 1 X X X X
-A 1 2 3 4 X X X X
-X X X 4 1 2 3 4 B
+X X X 4 3 X X X X br
+x X X 1 2 X X X X br
+x X X 2 1 X X X X br
+& 1 2 3 4 X X X X br
+X X X 4 1 2 3 4 § br
+
+FASE 2
+
+Considere X como posição vazia
+Considere br como quebra de linha
+& posição inicial
+§ posição final
+Sequência: 2539
+
+X X & X X X X br
+2 9 2 5 3 9 § br
+5 3 5 3 X X X br
+2 9 2 9 X X X br
+
+FASE 3
+
+Considere X como posição vazia
+Considere br como quebra de linha
+& posição inicial
+§ posição final
+Sequência: BU18
+
+B U 1 8 X X X X X br
+& X X B U X X X X br
+X X X X 1 8 1 X X br
+X X X X X B U X X br
+X X X X X U 1 8 § br
+
+FASE 4
+
+Considere X como posição vazia
+Considere br como quebra de linha
+& posição inicial
+§ posição final
+Sequência: N6R4
+
+
+X 6 N X N 4 X X X br
+X R 4 R 6 R X X X br
+X 4 X X N 6 R 4 § br
+& N 6 R 4 N X X X br
+
+
+FASE 5
+
+Considere X como posição vazia
+Considere br como quebra de linha
+& posição inicial
+§ posição final
+Sequência: P167
+
+& X X X X § X X X X br
+P X P 1 6 7 X X X X br
+1 6 7 6 1 P 7 X 1 6 br
+6 1 P 7 P 1 6 1 P 7 br
+7 X 7 X 7 6 X 6 7 X br
+P X 6 1 P 1 6 1 6 7 br
+1 6 7 P 1 6 7 P 1 P br
+
+FASE 6
+
+Considere X como posição vazia
+Considere br como quebra de linha
+& posição inicial
+§ posição final
+
+Sequência: L8P1
+
+Mapa:
+
+& L 8 P 1 L 8 P 8 P 1 br
+X X X X X X P 1 L 8 L br
+X X X X X X 8 L 1 P X br
+X X X X X X X X L X X br
+X X X X X X X X 8 P 1 br
+X X X X X X X X X X § br
