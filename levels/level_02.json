@@ -3,8 +3,8 @@
   "sequences": [["2", "5", "3", "9"]],
   "matrix": [
     "X X & X X X X br",
-    "3 9 2 5 3 9 § br",
-    "5 9 5 2 X X X br",
-    "2 9 3 9 X X X br"
+    "2 9 2 5 3 9 § br",
+    "5 3 5 3 X X X br",
+    "2 9 2 9 X X X br"
   ]
 }
