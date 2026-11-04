@@ -9,6 +9,12 @@ var _camera_ready := false
 
 
 func _ready() -> void:
+	# Fundo animado (mesmo estilo das telas de menu), atrás do tabuleiro.
+	var bg_layer := CanvasLayer.new()
+	bg_layer.layer = -1
+	add_child(bg_layer)
+	bg_layer.add_child(Background.new())
+
 	# Não permite abrir uma fase fora de ordem (pular fases).
 	if not GameState.is_completed(GameState.current_level_id) \
 			and GameState.current_level_id != GameState.next_level_id():
