@@ -40,8 +40,8 @@ func _draw() -> void:
 				var t := float(s) / 12.0
 				var mt := 1.0 - t
 				pts.append(mt * mt * p0 + 2.0 * mt * t * c + t * t * p1)
-		draw_polyline(pts, col, cell_size * 0.22, true)
+		draw_polyline(pts, col, cell_size * 0.11, true)
 
 	# Juntas arredondadas para a linha não ter cantos secos.
 	for p in cells:
-		draw_circle(_cell_center(p), cell_size * 0.11, col)
+		draw_circle(_cell_center(p), cell_size * 0.055, col)
