@@ -292,14 +292,10 @@ func set_sequence(seq: Array, step: int) -> void:
 	var active := step % seq.size()
 	for i in seq.size():
 		var sym := str(seq[i])
-		var chip := Label.new()
-		chip.text = sym
-		chip.custom_minimum_size = Vector2(56, 56)
-		chip.horizontal_alignment = HORIZONTAL_ALIGNMENT_CENTER
-		chip.vertical_alignment = VERTICAL_ALIGNMENT_CENTER
-		chip.add_theme_font_size_override("font_size", 30)
-		chip.add_theme_color_override("font_color", Color.WHITE)
 		var col := StyleFactory.color_for(sym)
+
+		var chip := PanelContainer.new()
+		chip.custom_minimum_size = Vector2(60, 60)
 		var sb := StyleFactory.rounded_panel(col, 26)
 		if i == active:
 			sb.bg_color = col.lightened(0.10)
@@ -307,7 +303,16 @@ func set_sequence(seq: Array, step: int) -> void:
 			sb.border_color = StyleFactory.HIGHLIGHT
 		else:
 			sb.bg_color = col.darkened(0.20)
-		chip.add_theme_stylebox_override("normal", sb)
+		chip.add_theme_stylebox_override("panel", sb)
+
+		var icon := FigureIcon.new()
+		icon.symbol = sym
+		icon.draw_background = false
+		icon.custom_minimum_size = Vector2(48, 48)
+		icon.size_flags_horizontal = Control.SIZE_SHRINK_CENTER
+		icon.size_flags_vertical = Control.SIZE_SHRINK_CENTER
+		chip.add_child(icon)
+
 		_seq_box.add_child(chip)
 
 

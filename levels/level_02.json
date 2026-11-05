@@ -1,10 +1,10 @@
 {
   "id": 2,
-  "sequences": [["2", "5", "3", "9"]],
+  "sequences": [["bombom", "carro", "castelo", "coracao"]],
   "matrix": [
     "X X & X X X X br",
-    "2 9 2 5 3 9 § br",
-    "5 3 5 3 X X X br",
-    "2 9 2 9 X X X br"
+    "bombom coracao bombom carro castelo coracao § br",
+    "carro castelo carro castelo X X X br",
+    "bombom coracao bombom coracao X X X br"
   ]
 }

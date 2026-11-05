@@ -1,13 +1,13 @@
 {
   "id": 5,
-  "sequences": [["P", "1", "6", "7"]],
+  "sequences": [["peixe", "piano", "tenis", "tigre"]],
   "matrix": [
     "& X X X X § X X X X br",
-    "P X P 1 6 7 X X X X br",
-    "1 6 7 6 1 P 7 X 1 6 br",
-    "6 1 P 7 P 1 6 1 P 7 br",
-    "7 X 7 X 7 6 X 6 7 X br",
-    "P X 6 1 P 1 6 1 6 7 br",
-    "1 6 7 P 1 6 7 P 1 P br"
+    "peixe X peixe piano tenis tigre X X X X br",
+    "piano tenis tigre tenis piano peixe tigre X piano tenis br",
+    "tenis piano peixe tigre peixe piano tenis piano peixe tigre br",
+    "tigre X tigre X tigre tenis X tenis tigre X br",
+    "peixe X tenis piano peixe piano tenis piano tenis tigre br",
+    "piano tenis tigre peixe piano tenis tigre peixe piano peixe br"
   ]
 }

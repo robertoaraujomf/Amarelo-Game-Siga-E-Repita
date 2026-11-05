@@ -1,11 +1,11 @@
 {
   "id": 3,
-  "sequences": [["B", "U", "1", "8"]],
+  "sequences": [["elefante", "escada", "flauta", "livro"]],
   "matrix": [
-    "B U 1 8 X X X X X br",
-    "& X X B U X X X X br",
-    "X X X X 1 8 1 X X br",
-    "X X X X X B U X X br",
-    "X X X X X U 1 8 § br"
+    "elefante escada flauta livro X X X X X br",
+    "& X X elefante escada X X X X br",
+    "X X X X flauta livro flauta X X br",
+    "X X X X X elefante escada X X br",
+    "X X X X X escada flauta livro § br"
   ]
 }

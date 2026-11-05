@@ -1,11 +1,11 @@
 {
   "id": 1,
-  "sequences": [["1", "2", "3", "4"]],
+  "sequences": [["arvore", "aviao", "balao", "bicicleta"]],
   "matrix": [
-    "X X X 4 3 X X X X br",
-    "x X X 1 2 X X X X br",
-    "x X X 2 1 X X X X br",
-    "& 1 2 3 4 X X X X br",
-    "X X X 4 1 2 3 4 § br"
+    "X X X bicicleta balao X X X X br",
+    "x X X arvore aviao X X X X br",
+    "x X X aviao arvore X X X X br",
+    "& arvore aviao balao bicicleta X X X X br",
+    "X X X bicicleta arvore aviao balao bicicleta § br"
   ]
 }

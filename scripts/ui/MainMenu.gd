@@ -45,23 +45,6 @@ func _ready() -> void:
 	quit.pressed.connect(func() -> void: get_tree().quit())
 	col.add_child(quit)
 
-	# TEMP DEBUG SCREENSHOT
-	var img := get_viewport().get_texture().get_image()
-	img.save_png("/tmp/opencode/shot_menu2.png")
-	print("SHOT2_SAVED")
-
-
-var _dbg_frames := 0
-
-
-func _process(_d: float) -> void:
-	_dbg_frames += 1
-	if _dbg_frames == 5:
-		var img2 := get_viewport().get_texture().get_image()
-		img2.save_png("/tmp/opencode/shot_menu2.png")
-		print("SHOT2_SAVED_AGAIN")
-
-
 func _gap(h: int) -> Control:
 	var c := Control.new()
 	c.custom_minimum_size = Vector2(0, h)

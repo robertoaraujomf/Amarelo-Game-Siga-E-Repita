@@ -1,10 +1,10 @@
 {
   "id": 4,
-  "sequences": [["N", "6", "R", "4"]],
+  "sequences": [["macaco", "melancia", "morango", "passarinho"]],
   "matrix": [
-    "X 6 N X N 4 X X X br",
-    "X R 4 R 6 R X X X br",
-    "X 4 X X N 6 R 4 § br",
-    "& N 6 R 4 N X X X br"
+    "X melancia macaco X macaco passarinho X X X br",
+    "X morango passarinho morango melancia morango X X X br",
+    "X passarinho X X macaco melancia morango passarinho § br",
+    "& macaco melancia morango passarinho macaco X X X br"
   ]
 }

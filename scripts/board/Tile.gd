@@ -9,9 +9,20 @@ var is_player: bool = false
 var is_next: bool = false
 
 var _time: float = 0.0
+var _texture: Texture2D = null
+var _texture_tried: bool = false
+var _sheet: Texture2D = null
+var _sheet_frames: int = 1
+var _sheet_fps: float = 10.0
+var _sheet_tried: bool = false
 
 
 func _process(delta: float) -> void:
+	_ensure_sheet()
+	if _sheet != null:
+		_time += delta
+		queue_redraw()
+		return
 	if is_player or is_next or LevelMatrix.is_special(symbol) \
 			or LevelMatrix.is_start(symbol) or LevelMatrix.is_end(symbol):
 		_time += delta
@@ -45,8 +56,63 @@ func _draw() -> void:
 		_draw_player_halo(r)
 
 
+func _ensure_sheet() -> void:
+	if _sheet_tried:
+		return
+	_sheet_tried = true
+	var path := "res://assets/figuras/%s_sheet.png" % symbol
+	if ResourceLoader.exists(path):
+		_sheet = load(path)
+		var meta_path := "res://assets/figuras/%s.json" % symbol
+		if ResourceLoader.exists(meta_path):
+			var f := FileAccess.open(meta_path, FileAccess.READ)
+			if f:
+				var parsed: Variant = JSON.parse_string(f.get_as_text())
+				f.close()
+				if typeof(parsed) == TYPE_DICTIONARY:
+					_sheet_frames = int(parsed.get("frames", 1))
+					_sheet_fps = float(parsed.get("fps", 10.0))
+		if _sheet_frames < 1:
+			_sheet_frames = 1
+		if _sheet_fps <= 0.0:
+			_sheet_fps = 10.0
+
+
+func _ensure_texture() -> void:
+	if _texture_tried:
+		return
+	_texture_tried = true
+	if _sheet != null:
+		return
+	var path := "res://assets/figuras/%s.png" % symbol
+	if ResourceLoader.exists(path):
+		_texture = load(path)
+
+
 func _draw_glyph(r: float) -> void:
+	_ensure_sheet()
+	_ensure_texture()
 	var white := Color.WHITE
+	if _sheet != null:
+		var frame_w := _sheet.get_size().x / float(_sheet_frames)
+		var frame_h := _sheet.get_size().y
+		var frame_index := int(_time * _sheet_fps) % _sheet_frames
+		var src_rect := Rect2(Vector2(frame_w * frame_index, 0), Vector2(frame_w, frame_h))
+		var atlas := AtlasTexture.new()
+		atlas.atlas = _sheet
+		atlas.region = src_rect
+		var max_dim := r * 1.7
+		var scale := minf(max_dim / frame_w, max_dim / frame_h)
+		var draw_size := Vector2(frame_w, frame_h) * scale
+		draw_texture_rect(atlas, Rect2(-draw_size * 0.5, draw_size), false)
+		return
+	if _texture != null:
+		var tex_size := _texture.get_size()
+		var max_dim := r * 1.7
+		var scale := minf(max_dim / tex_size.x, max_dim / tex_size.y)
+		var draw_size := tex_size * scale
+		draw_texture_rect(_texture, Rect2(-draw_size * 0.5, draw_size), false)
+		return
 	if LevelMatrix.is_special(symbol):
 		_draw_sparkle(r, white)
 	elif LevelMatrix.is_start(symbol):
