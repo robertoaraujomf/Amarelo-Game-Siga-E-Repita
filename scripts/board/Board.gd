@@ -47,6 +47,13 @@ var _swipe_touch_index := -1
 var _mouse_swiping := false
 var _history: Array = []            # snapshots para "desfazer"
 
+# Pan manual do mapa (touch-and-drag / click-and-drag em area vazia).
+var _panning := false
+var _pan_touch_index := -1
+var _pan_start_pointer := Vector2.ZERO
+var _pan_start_offset := Vector2.ZERO
+var _pan_offset := Vector2.ZERO
+
 
 # ---------------------------------------------------------------- construcao
 func load_level(level: Dictionary) -> void:
@@ -84,6 +91,9 @@ func _clear() -> void:
 	_is_moving = false
 	_pending_win = false
 	_history.clear()
+	_panning = false
+	_pan_touch_index = -1
+	_pan_offset = Vector2.ZERO
 
 
 func _compute_layout() -> void:
@@ -186,10 +196,11 @@ func _camera_target() -> Vector2:
 	var half_board := board_size * 0.5 + Vector2(BOARD_PADDING, BOARD_PADDING)
 
 	# Centro que deixa o jogador no meio da faixa visivel (entre as margens).
+	# O pan manual (arrastar em area vazia) soma um deslocamento persistente.
 	var desired := Vector2(
 		player.position.x,
 		player.position.y - (view_top - view_bottom) * 0.5
-	)
+	) + _pan_offset
 
 	return Vector2(
 		_clamp_camera_axis(desired.x, half_view.x, half_board.x, 0.0, 0.0),
@@ -229,14 +240,27 @@ func _unhandled_input(event: InputEvent) -> void:
 	if event is InputEventMouseButton:
 		if event.button_index == MOUSE_BUTTON_LEFT:
 			if event.pressed:
-				_swipe_start = event.position
-				_swipe_current_pos = event.position
-				_swipe_last_pos = event.position
-				_swipe_active = true
-				_mouse_swiping = true
-				_swipe_dir = Vector2i.ZERO
-				_swipe_touch_index = -1000
+				if _is_empty_at(event.position):
+					# Pan do mapa em area vazia (click-and-drag).
+					_panning = true
+					_pan_touch_index = -1000
+					_pan_start_pointer = event.position
+					_pan_start_offset = _pan_offset
+					_swipe_active = false
+					_mouse_swiping = false
+					_swipe_dir = Vector2i.ZERO
+				else:
+					_swipe_start = event.position
+					_swipe_current_pos = event.position
+					_swipe_last_pos = event.position
+					_swipe_active = true
+					_mouse_swiping = true
+					_swipe_dir = Vector2i.ZERO
+					_swipe_touch_index = -1000
 			else:
+				if _panning and _pan_touch_index == -1000:
+					_panning = false
+					_pan_touch_index = -1
 				_swipe_active = false
 				_mouse_swiping = false
 				_swipe_dir = Vector2i.ZERO
@@ -244,22 +268,40 @@ func _unhandled_input(event: InputEvent) -> void:
 
 	if event is InputEventScreenTouch:
 		if event.pressed:
-			_swipe_start = event.position
-			_swipe_current_pos = event.position
-			_swipe_last_pos = event.position
-			_swipe_active = true
-			_swipe_dir = Vector2i.ZERO
-			_swipe_touch_index = event.index
+			if _is_empty_at(event.position):
+				_panning = true
+				_pan_touch_index = event.index
+				_pan_start_pointer = event.position
+				_pan_start_offset = _pan_offset
+				_swipe_active = false
+				_mouse_swiping = false
+				_swipe_dir = Vector2i.ZERO
+			else:
+				_swipe_start = event.position
+				_swipe_current_pos = event.position
+				_swipe_last_pos = event.position
+				_swipe_active = true
+				_swipe_dir = Vector2i.ZERO
+				_swipe_touch_index = event.index
 		else:
-			if _swipe_active and ((_mouse_swiping and event.index == -1000) or event.index == _swipe_touch_index):
+			if _panning and event.index == _pan_touch_index:
+				_panning = false
+				_pan_touch_index = -1
+			elif _swipe_active and ((_mouse_swiping and event.index == -1000) or event.index == _swipe_touch_index):
 				_swipe_active = false
 				_mouse_swiping = false
 				_swipe_dir = Vector2i.ZERO
 				_swipe_touch_index = -1
-	elif event is InputEventScreenDrag and _swipe_active and ((_mouse_swiping and event.index == -1000) or event.index == _swipe_touch_index):
-		_swipe_current_pos = event.position
-	elif event is InputEventMouseMotion and _swipe_active and _mouse_swiping:
-		_swipe_current_pos = event.position
+	elif event is InputEventScreenDrag:
+		if _panning and event.index == _pan_touch_index:
+			_update_pan(event.position)
+		elif _swipe_active and ((_mouse_swiping and event.index == -1000) or event.index == _swipe_touch_index):
+			_swipe_current_pos = event.position
+	elif event is InputEventMouseMotion:
+		if _panning and _pan_touch_index == -1000:
+			_update_pan(event.position)
+		elif _swipe_active and _mouse_swiping:
+			_swipe_current_pos = event.position
 
 	if _is_moving and not (_swipe_active):
 		return
@@ -369,6 +411,42 @@ func _emit_end_blocked() -> void:
 	if Settings.haptics_enabled:
 		Input.vibrate_handheld(80)
 	end_blocked.emit()
+
+
+## Converte uma posição de tela (pixels) para coordenadas de mundo do tabuleiro.
+func _screen_to_world(screen_pos: Vector2) -> Vector2:
+	if camera == null:
+		return screen_pos
+	var vp := get_viewport_rect().size
+	var zoom := camera.zoom
+	if zoom.x == 0.0:
+		zoom.x = 1.0
+	if zoom.y == 0.0:
+		zoom.y = 1.0
+	return (screen_pos - vp * 0.5) / zoom + camera.position
+
+
+## Indica se a posição de tela cai sobre uma área vazia (sem peça) do tabuleiro.
+func _is_empty_at(screen_pos: Vector2) -> bool:
+	if matrix == null:
+		return true
+	var world_pos := _screen_to_world(screen_pos)
+	var cell := Vector2i(
+		int(floor((world_pos.x - _cell_offset.x) / cell_size)),
+		int(floor((world_pos.y - _cell_offset.y) / cell_size))
+	)
+	return not tiles.has(cell)
+
+
+## Atualiza o deslocamento manual do mapa durante o arrasto.
+func _update_pan(screen_pos: Vector2) -> void:
+	if not _panning or camera == null:
+		return
+	var zoom := camera.zoom.x
+	if zoom == 0.0:
+		zoom = 1.0
+	var delta := (screen_pos - _pan_start_pointer) / zoom
+	_pan_offset = _pan_start_offset - delta
 
 
 # ---------------------------------------------------------- desfazer/reiniciar
