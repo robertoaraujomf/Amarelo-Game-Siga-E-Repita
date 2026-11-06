@@ -66,6 +66,7 @@ func _generate_trail_positions(n: int) -> Array[Vector2]:
 	pts.append(cur)
 	var segments: Array = []
 	var margin := 72.0
+	var min_x := DESIGN_W * 0.5
 	var y_min := TOP_PAD - 180.0
 	var y_max := TOP_PAD + float(n + 6) * SPACING
 	for i in range(1, n):
@@ -74,7 +75,7 @@ func _generate_trail_positions(n: int) -> Array[Vector2]:
 			var dir: Vector2 = TRAIL_DIRS[rng.randi_range(0, TRAIL_DIRS.size() - 1)]
 			var length := rng.randi_range(1, 5)
 			var cand := cur + dir * (float(length) * TRAIL_STEP)
-			if cand.x < margin or cand.x > DESIGN_W - margin:
+			if cand.x < min_x or cand.x > DESIGN_W - margin:
 				continue
 			if cand.y < y_min or cand.y > y_max:
 				continue
@@ -99,8 +100,8 @@ func _generate_trail_positions(n: int) -> Array[Vector2]:
 			break
 		if not placed:
 			var cand := cur + Vector2(0.0, TRAIL_STEP)
-			if cand.x < margin:
-				cand.x = margin
+			if cand.x < min_x:
+				cand.x = min_x
 			if cand.x > DESIGN_W - margin:
 				cand.x = DESIGN_W - margin
 			segments.append({"a": cur, "b": cand})
