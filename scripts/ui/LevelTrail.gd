@@ -51,6 +51,7 @@ func build(levels: Array, progress: Node) -> void:
 	var max_y := TOP_PAD
 	for pos in positions:
 		max_y = maxf(max_y, pos.y)
+	max_y = maxf(max_y, TOP_PAD + float(n - 1) * SPACING)
 	custom_minimum_size = Vector2(DESIGN_W, max_y + TOP_PAD * 1.5)
 	queue_redraw()
 
@@ -69,10 +70,14 @@ func _generate_trail_positions(n: int) -> Array[Vector2]:
 	var min_x := DESIGN_W * 0.5
 	var y_min := TOP_PAD - 180.0
 	var y_max := TOP_PAD + float(n + 6) * SPACING
+	var last_dir := Vector2.ZERO
 	for i in range(1, n):
 		var placed := false
-		for _t in range(50):
+		for _t in range(80):
 			var dir: Vector2 = TRAIL_DIRS[rng.randi_range(0, TRAIL_DIRS.size() - 1)]
+			# Evita sequencias longas de movimento puramente vertical.
+			if last_dir.x == 0.0 and dir.x == 0.0:
+				continue
 			var length := rng.randi_range(1, 5)
 			var cand := cur + dir * (float(length) * TRAIL_STEP)
 			if cand.x < min_x or cand.x > DESIGN_W - margin:
@@ -96,17 +101,33 @@ func _generate_trail_positions(n: int) -> Array[Vector2]:
 			segments.append({"a": cur, "b": cand})
 			pts.append(cand)
 			cur = cand
+			last_dir = dir
 			placed = true
 			break
 		if not placed:
-			var cand := cur + Vector2(0.0, TRAIL_STEP)
+			# Fallback variado (nunca reto vertical).
+			var fallbacks := [Vector2(1, 1), Vector2(-1, 1), Vector2(1, 0), Vector2(1, -1)]
+			var fb: Vector2 = fallbacks[rng.randi_range(0, fallbacks.size() - 1)]
+			var cand := cur + fb * (2.0 * TRAIL_STEP)
 			if cand.x < min_x:
 				cand.x = min_x
 			if cand.x > DESIGN_W - margin:
 				cand.x = DESIGN_W - margin
+			if cand.y < y_min:
+				cand.y = y_min
+			if cand.y > y_max:
+				cand.y = y_max
 			segments.append({"a": cur, "b": cand})
 			pts.append(cand)
 			cur = cand
+			last_dir = fb
+	# Garante altura minima para permitir rolagem.
+	var max_y := TOP_PAD
+	for p in pts:
+		max_y = maxf(max_y, p.y)
+	if max_y < TOP_PAD + float(n - 1) * SPACING:
+		max_y = TOP_PAD + float(n - 1) * SPACING
+	# (max_y usado fora? armazena em pts? nao) 
 	return pts
 
 
