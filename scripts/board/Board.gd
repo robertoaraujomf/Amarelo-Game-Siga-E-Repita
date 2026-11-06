@@ -6,6 +6,7 @@ extends Node2D
 signal state_changed
 signal sequence_changed
 signal blocked
+signal end_blocked
 signal won
 
 const MOVE_DURATION := 0.16
@@ -160,6 +161,9 @@ func _process(_delta: float) -> void:
 				if matrix.is_inside(target) and rules.can_move(player_cell, target):
 					try_move(_swipe_dir)
 				else:
+					if matrix.is_inside(target) and LevelMatrix.is_end(matrix.symbol_at(target)) \
+							and not rules.all_visited():
+						_emit_end_blocked()
 					_swipe_active = false
 					_swipe_dir = Vector2i.ZERO
 					_swipe_touch_index = -1
@@ -301,7 +305,11 @@ func try_move(dir: Vector2i) -> void:
 		return
 	var target := player_cell + dir
 	if not matrix.is_inside(target) or not rules.can_move(player_cell, target):
-		_emit_blocked()
+		if matrix.is_inside(target) and LevelMatrix.is_end(matrix.symbol_at(target)) \
+				and not rules.all_visited():
+			_emit_end_blocked()
+		else:
+			_emit_blocked()
 		return
 
 	_history.append(_snapshot())
@@ -342,6 +350,9 @@ func _on_player_arrived() -> void:
 			if matrix.is_inside(target) and rules.can_move(player_cell, target):
 				try_move(_swipe_dir)
 				return
+			if matrix.is_inside(target) and LevelMatrix.is_end(matrix.symbol_at(target)) \
+					and not rules.all_visited():
+				_emit_end_blocked()
 		_swipe_active = false
 		_swipe_dir = Vector2i.ZERO
 		_swipe_touch_index = -1
@@ -352,6 +363,12 @@ func _emit_blocked() -> void:
 	if Settings.haptics_enabled:
 		Input.vibrate_handheld(40)
 	blocked.emit()
+
+
+func _emit_end_blocked() -> void:
+	if Settings.haptics_enabled:
+		Input.vibrate_handheld(80)
+	end_blocked.emit()
 
 
 # ---------------------------------------------------------- desfazer/reiniciar

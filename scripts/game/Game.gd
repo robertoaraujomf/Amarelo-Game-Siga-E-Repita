@@ -39,6 +39,7 @@ func _ready() -> void:
 	board.state_changed.connect(_refresh_hud)
 	board.sequence_changed.connect(_refresh_hud)
 	board.blocked.connect(hud.pop_blocked)
+	board.end_blocked.connect(hud.pop_end_blocked)
 	board.won.connect(_on_won)
 
 	board.load_level(_level)

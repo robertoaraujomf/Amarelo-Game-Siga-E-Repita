@@ -205,10 +205,11 @@ func _build_blocked() -> void:
 			StyleFactory.rounded_panel(Color("ff5d6c"), 34))
 	_blocked_label.horizontal_alignment = HORIZONTAL_ALIGNMENT_CENTER
 	_blocked_label.vertical_alignment = VERTICAL_ALIGNMENT_CENTER
-	_blocked_label.custom_minimum_size = Vector2(380, 76)
+	_blocked_label.autowrap_mode = TextServer.AUTOWRAP_WORD_SMART
+	_blocked_label.custom_minimum_size = Vector2(420, 76)
 	_blocked_label.mouse_filter = Control.MOUSE_FILTER_IGNORE
 	_blocked_label.modulate.a = 0.0
-	_blocked_label.pivot_offset = Vector2(190, 38)
+	_blocked_label.pivot_offset = Vector2(210, 38)
 	center.add_child(_blocked_label)
 
 
@@ -330,7 +331,10 @@ func set_control_mode(mode: int) -> void:
 	_swipe_hint.visible = not arrows
 
 
-func pop_blocked() -> void:
+func pop_blocked(message: String = "Caminho bloqueado!", color: Color = Color("ff5d6c")) -> void:
+	_blocked_label.text = message
+	_blocked_label.add_theme_stylebox_override("normal",
+			StyleFactory.rounded_panel(color, 34))
 	if _blocked_tween != null and _blocked_tween.is_valid():
 		_blocked_tween.kill()
 	_blocked_label.modulate.a = 1.0
@@ -340,6 +344,10 @@ func pop_blocked() -> void:
 		.set_trans(Tween.TRANS_BACK).set_ease(Tween.EASE_OUT)
 	_blocked_tween.tween_interval(0.5)
 	_blocked_tween.tween_property(_blocked_label, "modulate:a", 0.0, 0.3)
+
+
+func pop_end_blocked() -> void:
+	pop_blocked("Passe por todos os caminhos antes de encerrar a fase!", Color("ff9f1c"))
 
 
 func show_win() -> void:

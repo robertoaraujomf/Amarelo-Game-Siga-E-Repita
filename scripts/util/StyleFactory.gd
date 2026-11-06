@@ -19,7 +19,7 @@ const COLORS := {
 
 const BG_TOP := Color("5b2a86")
 const BG_BOTTOM := Color("ff8fab")
-const TRAIL := Color("8a2be2")
+const TRAIL := Color("ffd93d")
 const HIGHLIGHT := Color("ffe24d")
 
 # Cores de UI (todas coloridas - sem branco/preto/cinza).

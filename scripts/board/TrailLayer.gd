@@ -1,6 +1,6 @@
 class_name TrailLayer
 extends Node2D
-## Desenha a linha violeta do trajeto percorrido, por cima do tabuleiro.
+## Desenha a linha amarela do trajeto percorrido, por cima do tabuleiro.
 
 var cell_size: float = 96.0
 var cell_offset := Vector2.ZERO
