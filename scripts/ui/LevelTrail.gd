@@ -9,6 +9,12 @@ const NODE_R := 46.0
 const TOP_PAD := 80.0
 const SPACING := 160.0
 const DESIGN_W := 660.0
+const TRAIL_STEP := 135.0
+const TRAIL_MIN_NODE_DIST := 118.0
+const TRAIL_DIRS := [
+	Vector2(1, 0), Vector2(-1, 0), Vector2(0, 1), Vector2(0, -1),
+	Vector2(1, 1), Vector2(-1, 1), Vector2(1, -1), Vector2(-1, -1),
+]
 
 var _entries: Array = []
 var _time := 0.0
@@ -20,12 +26,10 @@ func build(levels: Array, progress: Node) -> void:
 		c.queue_free()
 
 	var n := levels.size()
+	var positions := _generate_trail_positions(n)
 	for i in n:
 		var id := int(levels[i].get("id", i + 1))
-		var t := float(i)
-		var pos := Vector2(
-			DESIGN_W * 0.5 + sin(t * 1.5) * DESIGN_W * 0.26,
-			TOP_PAD + t * SPACING)
+		var pos: Vector2 = positions[i] if i < positions.size() else Vector2(DESIGN_W * 0.5, TOP_PAD + float(i) * SPACING)
 		var status := "open"
 		if progress != null:
 			status = progress.level_status(id)
@@ -44,8 +48,79 @@ func build(levels: Array, progress: Node) -> void:
 		btn.pressed.connect(func() -> void: selected.emit(lid))
 		add_child(btn)
 
-	custom_minimum_size = Vector2(DESIGN_W, TOP_PAD * 2.0 + maxf(0.0, float(n - 1)) * SPACING)
+	var max_y := TOP_PAD
+	for pos in positions:
+		max_y = maxf(max_y, pos.y)
+	custom_minimum_size = Vector2(DESIGN_W, max_y + TOP_PAD * 1.5)
 	queue_redraw()
+
+
+
+func _generate_trail_positions(n: int) -> Array[Vector2]:
+	var rng := RandomNumberGenerator.new()
+	rng.seed = 987654321
+	var pts: Array[Vector2] = []
+	if n <= 0:
+		return pts
+	var cur := Vector2(DESIGN_W * 0.5, TOP_PAD)
+	pts.append(cur)
+	var segments: Array = []
+	var margin := 72.0
+	var y_min := TOP_PAD - 180.0
+	var y_max := TOP_PAD + float(n + 6) * SPACING
+	for i in range(1, n):
+		var placed := false
+		for _t in range(50):
+			var dir: Vector2 = TRAIL_DIRS[rng.randi_range(0, TRAIL_DIRS.size() - 1)]
+			var length := rng.randi_range(1, 5)
+			var cand := cur + dir * (float(length) * TRAIL_STEP)
+			if cand.x < margin or cand.x > DESIGN_W - margin:
+				continue
+			if cand.y < y_min or cand.y > y_max:
+				continue
+			var ok := true
+			for p in pts:
+				if p.distance_to(cand) < TRAIL_MIN_NODE_DIST:
+					ok = false
+					break
+			if not ok:
+				continue
+			var seg_ok := true
+			for seg in segments:
+				if _segments_intersect(cur, cand, seg["a"], seg["b"]):
+					seg_ok = false
+					break
+			if not seg_ok:
+				continue
+			segments.append({"a": cur, "b": cand})
+			pts.append(cand)
+			cur = cand
+			placed = true
+			break
+		if not placed:
+			var cand := cur + Vector2(0.0, TRAIL_STEP)
+			if cand.x < margin:
+				cand.x = margin
+			if cand.x > DESIGN_W - margin:
+				cand.x = DESIGN_W - margin
+			segments.append({"a": cur, "b": cand})
+			pts.append(cand)
+			cur = cand
+	return pts
+
+
+func _segments_intersect(p1: Vector2, p2: Vector2, p3: Vector2, p4: Vector2) -> bool:
+	var d1 := _cross(p3, p4, p1)
+	var d2 := _cross(p3, p4, p2)
+	var d3 := _cross(p1, p2, p3)
+	var d4 := _cross(p1, p2, p4)
+	if ((d1 > 0.0 and d2 < 0.0) or (d1 < 0.0 and d2 > 0.0)) and ((d3 > 0.0 and d4 < 0.0) or (d3 < 0.0 and d4 > 0.0)):
+		return true
+	return false
+
+
+func _cross(a: Vector2, b: Vector2, c: Vector2) -> float:
+	return (b.x - a.x) * (c.y - a.y) - (b.y - a.y) * (c.x - a.x)
 
 
 func _process(delta: float) -> void:
