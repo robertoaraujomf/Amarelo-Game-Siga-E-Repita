@@ -171,13 +171,10 @@ func _process(_delta: float) -> void:
 				if matrix.is_inside(target) and rules.can_move(player_cell, target):
 					try_move(_swipe_dir)
 				else:
+					# Nao cancela o arrasto: permite mudar de direcao sem soltar.
 					if matrix.is_inside(target) and LevelMatrix.is_end(matrix.symbol_at(target)) \
 							and not rules.all_visited():
 						_emit_end_blocked()
-					_swipe_active = false
-					_swipe_dir = Vector2i.ZERO
-					_swipe_touch_index = -1
-					_mouse_swiping = false
 		elif d_from_start.length() < SWIPE_MIN_DISTANCE:
 			pass
 		else:
@@ -362,6 +359,9 @@ func try_move(dir: Vector2i) -> void:
 		trail.set_cells(_trail_cells)
 
 	_is_moving = true
+	if _swipe_active:
+		_swipe_start = _swipe_current_pos
+		_swipe_last_pos = _swipe_current_pos
 	_pending_win = rules.is_won(target)
 	_refresh_visuals()
 	sequence_changed.emit()
@@ -395,10 +395,7 @@ func _on_player_arrived() -> void:
 			if matrix.is_inside(target) and LevelMatrix.is_end(matrix.symbol_at(target)) \
 					and not rules.all_visited():
 				_emit_end_blocked()
-		_swipe_active = false
-		_swipe_dir = Vector2i.ZERO
-		_swipe_touch_index = -1
-		_mouse_swiping = false
+		# Mantem o arrasto ativo para permitir mudar de direcao sem soltar.
 
 
 func _emit_blocked() -> void:
