@@ -15,6 +15,7 @@ const COLORS := {
 	"B": Color("ff5da2"),
 	"F": Color("ff5da2"),
 	"§": Color("ff5da2"),      # Fim alternativo (§)
+	"castelo": Color("6bcb77"), # Posições que recebem a figura castelo: fundo verde
 }
 
 const BG_TOP := Color("5b2a86")
