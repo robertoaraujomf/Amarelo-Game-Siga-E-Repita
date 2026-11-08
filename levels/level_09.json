@@ -1,0 +1,14 @@
+{
+  "id": 9,
+  "sequences": [["macaco", "melancia", "morango", "passarinho"]],
+  "matrix": [
+    "& macaco melancia morango passarinho macaco melancia morango passarinho macaco br",
+    "X X X X X X X X X melancia br",
+    "X X X X passarinho macaco melancia X X morango br",
+    "X X X X morango X morango X X passarinho br",
+    "X X X X melancia macaco passarinho morango melancia macaco br",
+    "X X X X X X macaco passarinho morango passarinho br",
+    "X X X X X X melancia morango melancia morango br",
+    "X X X X § passarinho morango passarinho macaco passarinho br"
+  ]
+}

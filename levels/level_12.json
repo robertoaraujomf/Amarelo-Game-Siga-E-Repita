@@ -1,0 +1,16 @@
+{
+  "id": 12,
+  "sequences": [["bombom", "carro", "castelo", "coracao"]],
+  "matrix": [
+    "X X X X coracao bombom coracao bombom coracao castelo carro X X X br",
+    "X X X X castelo carro castelo carro castelo coracao bombom X X X br",
+    "X bombom carro bombom carro X coracao bombom X bombom carro X X X br",
+    "bombom coracao castelo coracao X X X X X X castelo coracao X X br",
+    "carro castelo carro castelo X X & bombom carro X X bombom X X br",
+    "X coracao bombom coracao X X X X castelo coracao X carro bombom X br",
+    "X X coracao castelo carro bombom X X X bombom carro castelo coracao § br",
+    "X coracao bombom carro X coracao castelo X castelo carro bombom coracao X X br",
+    "X castelo carro X X X carro bombom coracao X X X X X br",
+    "X X X X X X X X X X X X X X br"
+  ]
+}

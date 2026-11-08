@@ -42,12 +42,12 @@ func _ready() -> void:
 	board.end_blocked.connect(hud.pop_end_blocked)
 	board.won.connect(_on_won)
 
+	_sync_view_margins()
 	board.load_level(_level)
-
+	
 	var idx := Levels.index_of_id(int(_level.get("id", 1)))
 	hud.set_level_info(idx + 1, Levels.count())
 	hud.set_control_mode(Settings.control_mode)
-	_sync_view_margins()
 	_refresh_hud()
 
 

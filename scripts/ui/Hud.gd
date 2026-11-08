@@ -282,8 +282,7 @@ func bottom_margin() -> float:
 
 
 func set_level_info(index: int, total: int) -> void:
-	_title.text = "Fase %d de %d" % [index, total]
-
+	_title.text = "Fase %d" % index
 
 func set_sequence(seq: Array, step: int) -> void:
 	for c in _seq_box.get_children():

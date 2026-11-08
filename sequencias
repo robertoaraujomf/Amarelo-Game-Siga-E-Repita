@@ -1,0 +1,25 @@
+na pasta de assets/figuras, há basicamente 20 imagens, salvas em várias extensões diferentes: 
+arvore, aviao, balao, bicicleta, 
+bombom, carro, castelo, coracao,
+elefante, escada, flauta, livro,
+macaco, melancia, morango, passarinho,
+peixe, piano, tenis, tigre
+Registre, no app, um array global, identificando as sequências:
+sequencias[0] = {arvore, aviao, balao, bicicleta},
+sequencias[1] = {bombom, carro, castelo, coracao},
+sequencias[2] = {elefante, escada, flauta, livro},
+sequencias[3] = {macaco, melancia, morango, passarinho},
+sequencias[4] = {peixe piano, tenis, tigre}
+Portanto, até o momento:
+a fase 1 usa a sequencia[0],
+a fase 2 usa a sequencia[1],
+a fase 3 usa a sequencia[2],
+a fase 4 usa a sequencia[3],
+a fase 5 usa a sequencia[4],
+a fase 6 usa a sequencia[0],
+a fase 7 usa a sequencia[1].
+a fase 8 usa a sequencia[2].
+a fase 9 usa a sequencia[3].
+a fase 10 usa a sequencia[4].
+a fase 11 usa a sequencia[0].
+a fase 12 usa a sequencia[1].podemos continuar ciando as próximas fases dessa forma?

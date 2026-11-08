@@ -1,0 +1,15 @@
+{
+  "id": 10,
+  "sequences": [["peixe", "piano", "tenis", "tigre"]],
+  "matrix": [
+    "& X piano tenis tigre tenis piano peixe tigre tenis br",
+    "peixe X peixe tigre peixe piano peixe tigre peixe piano br",
+    "piano peixe piano tenis piano tenis tigre tenis tigre tenis br",
+    "tenis tigre peixe tigre peixe tigre peixe piano peixe X br",
+    "X X X X X X piano X X X br",
+    "X X X piano peixe tigre tenis tigre peixe tigre br",
+    "X X X tenis tigre peixe piano tenis piano tenis br",
+    "X X X X X X X X X tigre br",
+    "X X X X X X X X X § br"
+  ]
+}

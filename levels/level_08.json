@@ -1,0 +1,13 @@
+{
+  "id": 8,
+  "sequences": [["elefante", "escada", "flauta", "livro"]],
+  "matrix": [
+    "& elefante escada X X X X X X X br",
+    "X X flauta livro elefante escada flauta X X X br",
+    "X elefante livro X X elefante livro elefante X X br",
+    "X escada flauta escada elefante livro flauta escada X X br",
+    "X flauta X X X X X X X X br",
+    "X livro elefante escada flauta livro elefante escada X X br",
+    "X X X elefante livro flauta escada flauta livro §"
+  ]
+}
