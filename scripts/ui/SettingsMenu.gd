@@ -12,13 +12,24 @@ func _ready() -> void:
 	var margin := MarginContainer.new()
 	margin.set_anchors_and_offsets_preset(Control.PRESET_FULL_RECT)
 	for s in ["margin_left", "margin_right", "margin_top", "margin_bottom"]:
-		margin.add_theme_constant_override(s, 40)
+		margin.add_theme_constant_override(s, 20)
 	add_child(margin)
 
 	var col := VBoxContainer.new()
-	col.alignment = BoxContainer.ALIGNMENT_CENTER
+	col.alignment = BoxContainer.ALIGNMENT_BEGIN
 	col.add_theme_constant_override("separation", 18)
 	margin.add_child(col)
+
+	var back := StyleFactory.make_button("<", Color("ff8fab"), 42)
+	back.custom_minimum_size = Vector2(72, 72)
+	back.size_flags_horizontal = Control.SIZE_SHRINK_BEGIN
+	back.pressed.connect(func() -> void:
+		get_tree().change_scene_to_file("res://scenes/ui/MainMenu.tscn"))
+	col.add_child(back)
+
+	var _spacer_top := Control.new()
+	_spacer_top.size_flags_vertical = Control.SIZE_EXPAND_FILL
+	col.add_child(_spacer_top)
 
 	var title := Label.new()
 	title.text = "Configurações"
@@ -52,10 +63,9 @@ func _ready() -> void:
 		_refresh())
 	col.add_child(_haptics_btn)
 
-	var back := StyleFactory.make_button("Voltar", Color("ff6b6b"), 30)
-	back.pressed.connect(func() -> void:
-		get_tree().change_scene_to_file("res://scenes/ui/MainMenu.tscn"))
-	col.add_child(back)
+	var _spacer_bottom := Control.new()
+	_spacer_bottom.size_flags_vertical = Control.SIZE_EXPAND_FILL
+	col.add_child(_spacer_bottom)
 
 	_refresh()
 

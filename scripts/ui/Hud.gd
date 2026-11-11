@@ -8,6 +8,7 @@ signal dpad(direction: Vector2i)
 signal undo_pressed
 signal restart_pressed
 signal next_level_pressed
+signal end_blocked_dismissed
 
 var _title: Label
 var _seq_box: HBoxContainer
@@ -16,6 +17,7 @@ var _special_chip: FigureIcon
 var _grid: GridContainer
 var _swipe_hint: Label
 var _overlay: Control
+var _end_blocked_overlay: Control
 var _blocked_label: Label
 var _blocked_tween: Tween
 
@@ -30,6 +32,7 @@ func _ready() -> void:
 	_build_controls()
 	_build_blocked()
 	_build_overlay()
+	_build_end_blocked()
 
 
 func _build_root() -> void:
@@ -265,6 +268,57 @@ func _build_overlay() -> void:
 	col.add_child(next)
 
 
+func _build_end_blocked() -> void:
+	_end_blocked_overlay = Control.new()
+	_end_blocked_overlay.set_anchors_and_offsets_preset(Control.PRESET_FULL_RECT)
+	_end_blocked_overlay.visible = false
+	add_child(_end_blocked_overlay)
+
+	var dim := ColorRect.new()
+	dim.color = Color(0, 0, 0, 0.45)
+	dim.set_anchors_and_offsets_preset(Control.PRESET_FULL_RECT)
+	dim.mouse_filter = Control.MOUSE_FILTER_STOP
+	_end_blocked_overlay.add_child(dim)
+
+	var center := CenterContainer.new()
+	center.set_anchors_and_offsets_preset(Control.PRESET_FULL_RECT)
+	_end_blocked_overlay.add_child(center)
+
+	var panel := PanelContainer.new()
+	panel.add_theme_stylebox_override("panel",
+			StyleFactory.rounded_panel(Color("ff9f1c"), 44))
+	center.add_child(panel)
+
+	var margin := MarginContainer.new()
+	for s in ["margin_left", "margin_right", "margin_top", "margin_bottom"]:
+		margin.add_theme_constant_override(s, 24)
+	panel.add_child(margin)
+
+	var col := VBoxContainer.new()
+	col.add_theme_constant_override("separation", 16)
+	margin.add_child(col)
+
+	var label := Label.new()
+	label.text = "Passe por todos os caminhos antes de encerrar a fase!"
+	label.add_theme_font_size_override("font_size", 26)
+	label.add_theme_color_override("font_color", Color.WHITE)
+	label.horizontal_alignment = HORIZONTAL_ALIGNMENT_CENTER
+	label.autowrap_mode = TextServer.AUTOWRAP_WORD_SMART
+	label.custom_minimum_size = Vector2(360, 0)
+	col.add_child(label)
+
+	var ok := StyleFactory.make_button("OK", Color("ff9f1c"), 30)
+	ok.custom_minimum_size = Vector2(160, 64)
+	ok.pressed.connect(func() -> void:
+		_end_blocked_overlay.visible = false
+		end_blocked_dismissed.emit())
+	col.add_child(ok)
+
+
+func hide_end_blocked() -> void:
+	if _end_blocked_overlay != null:
+		_end_blocked_overlay.visible = false
+
 # ------------------------------------------------------------------ API
 ## Altura da HUD no topo, em pixels (para a câmera não cobrir o jogador).
 func top_margin() -> float:
@@ -346,7 +400,12 @@ func pop_blocked(message: String = "Caminho bloqueado!", color: Color = Color("f
 
 
 func pop_end_blocked() -> void:
-	pop_blocked("Passe por todos os caminhos antes de encerrar a fase!", Color("ff9f1c"))
+	if _end_blocked_overlay == null:
+		return
+	_end_blocked_overlay.visible = true
+	_end_blocked_overlay.modulate.a = 0.0
+	var tw := create_tween()
+	tw.tween_property(_end_blocked_overlay, "modulate:a", 1.0, 0.2)
 
 
 func show_win() -> void:

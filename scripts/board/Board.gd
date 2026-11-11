@@ -46,6 +46,7 @@ var _swipe_dir := Vector2i.ZERO
 var _swipe_touch_index := -1
 var _mouse_swiping := false
 var _history: Array = []            # snapshots para "desfazer"
+var _input_enabled := true
 
 # Pan manual do mapa (touch-and-drag / click-and-drag em area vazia).
 var _panning := false
@@ -231,7 +232,7 @@ func refresh_camera() -> void:
 
 # ------------------------------------------------------------------- input
 func _unhandled_input(event: InputEvent) -> void:
-	if matrix == null:
+	if matrix == null or not _input_enabled:
 		return
 
 	if event is InputEventMouseButton:
@@ -339,8 +340,16 @@ func _resolve_swipe(delta: Vector2) -> void:
 
 
 # --------------------------------------------------------------- movimento
+func set_input_enabled(enabled: bool) -> void:
+	_input_enabled = enabled
+	if not enabled:
+		_swipe_active = false
+		_mouse_swiping = false
+		_swipe_dir = Vector2i.ZERO
+		_panning = false
+
 func try_move(dir: Vector2i) -> void:
-	if _is_moving or matrix == null or dir == Vector2i.ZERO:
+	if not _input_enabled or _is_moving or matrix == null or dir == Vector2i.ZERO:
 		return
 	var target := player_cell + dir
 	if not matrix.is_inside(target) or not rules.can_move(player_cell, target):

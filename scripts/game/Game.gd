@@ -33,13 +33,14 @@ func _ready() -> void:
 	hud.back_pressed.connect(_on_back)
 	hud.dpad.connect(board.try_move)
 	hud.next_level_pressed.connect(_on_next)
+	hud.end_blocked_dismissed.connect(_on_end_blocked_dismissed)
 	hud.undo_pressed.connect(_on_undo)
 	hud.restart_pressed.connect(_on_restart)
 
 	board.state_changed.connect(_refresh_hud)
 	board.sequence_changed.connect(_refresh_hud)
 	board.blocked.connect(hud.pop_blocked)
-	board.end_blocked.connect(hud.pop_end_blocked)
+	board.end_blocked.connect(_on_end_blocked)
 	board.won.connect(_on_won)
 
 	_sync_view_margins()
@@ -87,6 +88,13 @@ func _on_restart() -> void:
 	hud.hide_win()
 	board.restart()
 	_refresh_hud()
+
+func _on_end_blocked() -> void:
+	hud.pop_end_blocked()
+	board.set_input_enabled(false)
+
+func _on_end_blocked_dismissed() -> void:
+	board.set_input_enabled(true)
 
 
 func _on_next() -> void:

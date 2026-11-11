@@ -14,7 +14,7 @@ const TRAIL_MIN_NODE_DIST := 118.0
 # Direção de cada trecho entre fases consecutivas (1..34).
 const TRAIL_PHASE_DIRS := [
 	4, 5, 3, 2, 3, 3,
-	2, 3, 2, 1, 1, 1, 8, 7, 7, 8, 1, 1, 4, 2, 3, 3, 3, 2, 3, 3, 2, 3, 4, 4, 5, 6, 5,
+	2, 3, 2, 1, 8, 7, 7, 8, 2, 3, 3, 2, 2, 2, 3, 4, 5, 5, 5, 5, 5, 4, 5, 4, 5, 6, 5,
 ]
 # Ordem das 8 direções (1..8) conforme convenção:
 # 1 N, 2 NE, 3 E, 4 SE, 5 S, 6 SW, 7 W, 8 NW.

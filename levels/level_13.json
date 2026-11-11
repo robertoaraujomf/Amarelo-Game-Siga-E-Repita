@@ -1,0 +1,16 @@
+{
+  "id": 13,
+  "sequences": [["elefante", "escada", "flauta", "livro"]],
+  "matrix": [
+    "X X escada flauta livro elefante escada flauta livro X X X X § X X X X X br",
+    "X livro elefante X X X X X elefante escada X X X livro flauta X elefante escada flauta br",
+    "escada flauta X X X elefante escada X X flauta livro flauta X X escada elefante livro flauta livro br",
+    "elefante X X X X livro flauta escada X X elefante escada X X X X flauta escada elefante br",
+    "livro X X X X flauta livro elefante X flauta escada X livro elefante escada X escada elefante escada br",
+    "flauta X X X X escada elefante livro X livro X X flauta X flauta escada elefante livro flauta br",
+    "escada X X X & elefante escada flauta X elefante X elefante escada X livro elefante escada flauta escada br",
+    "elefante X X X X X flauta X X escada flauta livro elefante escada elefante X elefante livro elefante br",
+    "livro flauta livro X X elefante livro flauta X X X flauta escada flauta livro elefante escada flauta livro br",
+    "flauta escada elefante livro flauta escada elefante escada X X X X elefante livro X X X escada elefante br"
+  ]
+}

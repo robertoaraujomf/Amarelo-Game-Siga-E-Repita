@@ -70,7 +70,8 @@ func can_move(from: Vector2i, to: Vector2i) -> bool:
 		# Exige ter usado o último item da sequência antes de transicionar.
 		return sequence_completed()
 	if LevelMatrix.is_start(sym):
-		return true
+		# A posição inicial só pode ser a partida; não pode ser revisitada.
+		return false
 	return sym == next_symbol()
 
 

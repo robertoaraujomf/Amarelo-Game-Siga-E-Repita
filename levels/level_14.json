@@ -1,0 +1,25 @@
+{
+  "id": 14,
+  "sequences": [
+    [
+      "macaco",
+      "melancia",
+      "morango",
+      "passarinho"
+    ]
+  ],
+  "matrix": [
+    "X X X passarinho morango melancia morango passarinho macaco X X X X X X X X X br",
+    "X morango melancia macaco passarinho macaco melancia macaco melancia X X X X X X X X X br",
+    "X passarinho macaco melancia morango passarinho morango passarinho morango X X X X X X X X X br",
+    "X macaco passarinho macaco & morango melancia macaco passarinho X melancia morango passarinho X X X X X br",
+    "X melancia morango melancia morango melancia macaco melancia morango passarinho macaco melancia macaco X § X X X br",
+    "X X melancia macaco passarinho morango passarinho morango X X passarinho morango X X passarinho X X X br",
+    "X X X X macaco melancia morango passarinho morango X X passarinho macaco melancia morango melancia morango melancia br",
+    "X X X X X X melancia macaco melancia X X X X X passarinho macaco passarinho macaco br",
+    "X X X X X X X X X X X X X X morango melancia morango passarinho br",
+    "X X X X X X X X X X X X X morango passarinho macaco melancia macaco br",
+    "X X X X X X X X X X X X X melancia macaco melancia X X br",
+    "X X X X X X X X X X X X X X passarinho morango X X br"
+  ]
+}
