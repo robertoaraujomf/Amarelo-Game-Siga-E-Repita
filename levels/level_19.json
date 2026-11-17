@@ -9,17 +9,17 @@
     ]
   ],
   "matrix": [
-    "X X melancia macaco melancia macaco passarinho macaco passarinho X X X br",
-    "X passarinho morango passarinho morango passarinho morango melancia morango melancia macaco passarinho br",
-    "X macaco melancia morango passarinho macaco melancia morango passarinho macaco melancia morango br",
-    "X X morango melancia macaco passarinho macaco melancia macaco passarinho morango melancia br",
-    "X X passarinho macaco melancia morango passarinho morango passarinho morango passarinho macaco br",
-    "X X X morango melancia macaco passarinho morango macaco melancia & macaco br",
-    "X X X X macaco melancia morango melancia macaco passarinho morango melancia br",
-    "X X X morango passarinho morango passarinho macaco X X X X br",
-    "X X macaco melancia macaco melancia macaco passarinho § X X X br",
-    "X morango passarinho morango X X melancia morango passarinho X X X br",
-    "macaco melancia macaco X X X X passarinho macaco passarinho X X br",
-    "passarinho morango X X X X X X melancia morango X X br"
+    "X X X melancia macaco passarinho morango passarinho X X br",
+    "X X X morango X X melancia macaco X X br",
+    "macaco melancia macaco passarinho X X macaco passarinho macaco X br",
+    "passarinho morango passarinho morango X macaco passarinho morango melancia X br",
+    "X passarinho macaco melancia X melancia morango melancia macaco X br",
+    "X macaco melancia X X morango & macaco passarinho macaco br",
+    "X X morango X X passarinho macaco melancia morango melancia br",
+    "melancia morango passarinho X X X X morango melancia morango br",
+    "macaco X macaco passarinho morango X X passarinho macaco passarinho br",
+    "passarinho morango melancia X melancia X X X X X br",
+    "X X morango passarinho macaco passarinho macaco passarinho X X br",
+    "X X passarinho macaco melancia morango melancia morango passarinho § br"
   ]
 }
