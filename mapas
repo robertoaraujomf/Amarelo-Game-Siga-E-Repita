@@ -153,3 +153,28 @@ X X X X X X X X X X X X 4 1 2 3 2 X 2 3 4 3
 X X X X X X X X X X 1 2 1 4 3 4 1 4 X 4 1 2
 X X X X X X X X X X 4 3 X 1 2 1 X 3 2 1 X X
 X X X X X X X X X X X 4 § 4 3 X X X X X X X
+
+
+==================================================================================
+
+FASE 19
+
+Considere X como posição vazia
+Considere br como quebra de linha
+& posição inicial
+§ posição final
+Sequência: 1234
+substitua cada elemento da sequência pelo correspondente do array sequencia[]
+
+X X 2 1 2 1 4 1 4 X X X
+X 4 3 4 3 4 3 2 3 2 1 4
+X 1 2 3 4 1 2 3 4 1 2 3
+X X 3 2 1 4 1 2 1 4 3 2
+X X 4 1 2 3 4 3 4 3 4 1
+X X X 3 2 1 4 3 1 2 & 1
+X X X X 1 2 3 2 1 4 3 2
+X X X 3 4 3 4 1 X X X X
+X X 1 2 1 2 1 4 § X X X
+X 3 4 3 X X 2 3 4 X X X
+1 2 1 X X X X 4 1 4 X X
+4 3 X X X X X X 2 3 X X
