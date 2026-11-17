@@ -38,13 +38,7 @@ var _level: Dictionary = {}
 var _trail_cells: Array[Vector2i] = []
 var _is_moving := false
 var _pending_win := false
-var _swipe_start := Vector2.ZERO
-var _swipe_current_pos := Vector2.ZERO
-var _swipe_last_pos := Vector2.ZERO
-var _swipe_active := false
-var _swipe_dir := Vector2i.ZERO
-var _swipe_touch_index := -1
-var _mouse_swiping := false
+# (swipe removido: movimento por toque direto na casa)
 var _history: Array = []            # snapshots para "desfazer"
 var _input_enabled := true
 
@@ -151,39 +145,6 @@ func _process(_delta: float) -> void:
 	if camera == null or player == null:
 		return
 	camera.position = _camera_target()
-	if _swipe_active and matrix != null:
-		var d_from_start := _swipe_current_pos - _swipe_start
-		var d_dir := _swipe_current_pos - _swipe_last_pos
-		_swipe_last_pos = _swipe_current_pos
-		var candidate_dir := _swipe_dir
-		if d_dir.length() >= 4.0 or d_from_start.length() >= SWIPE_MIN_DISTANCE:
-			var dd := d_dir
-			if dd.length() < 1.0:
-				dd = d_from_start
-			if dd.length() >= 1.0:
-				if absf(dd.x) >= absf(dd.y):
-					candidate_dir = Vector2i(int(signf(dd.x)), 0)
-				else:
-					candidate_dir = Vector2i(0, int(signf(dd.y)))
-		if candidate_dir != Vector2i.ZERO:
-			_swipe_dir = candidate_dir
-			if not _is_moving:
-				var target := player_cell + _swipe_dir
-				if matrix.is_inside(target) and rules.can_move(player_cell, target):
-					try_move(_swipe_dir)
-				else:
-					# Nao cancela o arrasto: permite mudar de direcao sem soltar.
-					if matrix.is_inside(target) and LevelMatrix.is_end(matrix.symbol_at(target)) \
-							and not rules.all_visited():
-						_emit_end_blocked()
-		elif d_from_start.length() < SWIPE_MIN_DISTANCE:
-			pass
-		else:
-			_swipe_active = false
-			_swipe_dir = Vector2i.ZERO
-			_swipe_touch_index = -1
-			_mouse_swiping = false
-
 
 ## Segue o jogador suavemente, sem deformar proporcao, respeitando as margens
 ## da HUD. Se o tabuleiro couber na faixa visivel ele fica centralizado; se for
@@ -231,6 +192,28 @@ func refresh_camera() -> void:
 
 
 # ------------------------------------------------------------------- input
+func _screen_to_cell(screen_pos: Vector2) -> Vector2i:
+	var world_pos := _screen_to_world(screen_pos)
+	return Vector2i(
+		int(floor((world_pos.x - _cell_offset.x) / cell_size + 0.5)),
+		int(floor((world_pos.y - _cell_offset.y) / cell_size + 0.5))
+	)
+
+
+func _tap_move(screen_pos: Vector2) -> void:
+	if _is_moving or matrix == null:
+		return
+	var cell := _screen_to_cell(screen_pos)
+	if not tiles.has(cell):
+		return
+	if cell == player_cell:
+		return
+	var dir := cell - player_cell
+	if not ((dir.x == 0 and abs(dir.y) == 1) or (dir.y == 0 and abs(dir.x) == 1)):
+		return
+	try_move(dir)
+
+
 func _unhandled_input(event: InputEvent) -> void:
 	if matrix == null or not _input_enabled:
 		return
@@ -244,108 +227,50 @@ func _unhandled_input(event: InputEvent) -> void:
 					_pan_touch_index = -1000
 					_pan_start_pointer = event.position
 					_pan_start_offset = _pan_offset
-					_swipe_active = false
-					_mouse_swiping = false
-					_swipe_dir = Vector2i.ZERO
 				else:
-					_swipe_start = event.position
-					_swipe_current_pos = event.position
-					_swipe_last_pos = event.position
-					_swipe_active = true
-					_mouse_swiping = true
-					_swipe_dir = Vector2i.ZERO
-					_swipe_touch_index = -1000
+					_tap_move(event.position)
 			else:
 				if _panning and _pan_touch_index == -1000:
 					_panning = false
 					_pan_touch_index = -1
-				_swipe_active = false
-				_mouse_swiping = false
-				_swipe_dir = Vector2i.ZERO
-				_swipe_touch_index = -1
 
-	if event is InputEventScreenTouch:
+	elif event is InputEventScreenTouch:
 		if event.pressed:
 			if _is_empty_at(event.position):
 				_panning = true
 				_pan_touch_index = event.index
 				_pan_start_pointer = event.position
 				_pan_start_offset = _pan_offset
-				_swipe_active = false
-				_mouse_swiping = false
-				_swipe_dir = Vector2i.ZERO
 			else:
-				_swipe_start = event.position
-				_swipe_current_pos = event.position
-				_swipe_last_pos = event.position
-				_swipe_active = true
-				_swipe_dir = Vector2i.ZERO
-				_swipe_touch_index = event.index
+				_tap_move(event.position)
 		else:
 			if _panning and event.index == _pan_touch_index:
 				_panning = false
 				_pan_touch_index = -1
-			elif _swipe_active and ((_mouse_swiping and event.index == -1000) or event.index == _swipe_touch_index):
-				_swipe_active = false
-				_mouse_swiping = false
-				_swipe_dir = Vector2i.ZERO
-				_swipe_touch_index = -1
 	elif event is InputEventScreenDrag:
 		if _panning and event.index == _pan_touch_index:
 			_update_pan(event.position)
-		elif _swipe_active and ((_mouse_swiping and event.index == -1000) or event.index == _swipe_touch_index):
-			_swipe_current_pos = event.position
 	elif event is InputEventMouseMotion:
 		if _panning and _pan_touch_index == -1000:
 			_update_pan(event.position)
-		elif _swipe_active and _mouse_swiping:
-			_swipe_current_pos = event.position
 
-	if _is_moving and not (_swipe_active):
+	if _is_moving:
 		return
 
 	if event.is_action_pressed("move_up"):
-		_swipe_active = false
-		_swipe_dir = Vector2i.ZERO
-		_mouse_swiping = false
-		_swipe_touch_index = -1
 		try_move(Vector2i(0, -1)); return
 	if event.is_action_pressed("move_down"):
-		_swipe_active = false
-		_swipe_dir = Vector2i.ZERO
-		_mouse_swiping = false
-		_swipe_touch_index = -1
 		try_move(Vector2i(0, 1)); return
 	if event.is_action_pressed("move_left"):
-		_swipe_active = false
-		_swipe_dir = Vector2i.ZERO
-		_mouse_swiping = false
-		_swipe_touch_index = -1
 		try_move(Vector2i(-1, 0)); return
 	if event.is_action_pressed("move_right"):
-		_swipe_active = false
-		_swipe_dir = Vector2i.ZERO
-		_mouse_swiping = false
-		_swipe_touch_index = -1
 		try_move(Vector2i(1, 0)); return
-
-
-func _resolve_swipe(delta: Vector2) -> void:
-	if delta.length() < SWIPE_MIN_DISTANCE:
-		return
-	if absf(delta.x) >= absf(delta.y):
-		try_move(Vector2i(int(signf(delta.x)), 0))
-	else:
-		try_move(Vector2i(0, int(signf(delta.y))))
 
 
 # --------------------------------------------------------------- movimento
 func set_input_enabled(enabled: bool) -> void:
 	_input_enabled = enabled
 	if not enabled:
-		_swipe_active = false
-		_mouse_swiping = false
-		_swipe_dir = Vector2i.ZERO
 		_panning = false
 
 func try_move(dir: Vector2i) -> void:
@@ -368,9 +293,6 @@ func try_move(dir: Vector2i) -> void:
 		trail.set_cells(_trail_cells)
 
 	_is_moving = true
-	if _swipe_active:
-		_swipe_start = _swipe_current_pos
-		_swipe_last_pos = _swipe_current_pos
 	_pending_win = rules.is_won(target)
 	_refresh_visuals()
 	sequence_changed.emit()
@@ -383,28 +305,6 @@ func _on_player_arrived() -> void:
 		_pending_win = false
 		won.emit()
 		return
-	if _swipe_active and matrix != null:
-		var d_from_start := _swipe_current_pos - _swipe_start
-		var d_dir := _swipe_current_pos - _swipe_last_pos
-		var candidate_dir := _swipe_dir
-		var dd := d_dir
-		if dd.length() < 1.0:
-			dd = d_from_start
-		if dd.length() >= 1.0 and (d_from_start.length() >= SWIPE_MIN_DISTANCE or dd.length() >= 4.0):
-			if absf(dd.x) >= absf(dd.y):
-				candidate_dir = Vector2i(int(signf(dd.x)), 0)
-			else:
-				candidate_dir = Vector2i(0, int(signf(dd.y)))
-		if candidate_dir != Vector2i.ZERO:
-			_swipe_dir = candidate_dir
-			var target := player_cell + _swipe_dir
-			if matrix.is_inside(target) and rules.can_move(player_cell, target):
-				try_move(_swipe_dir)
-				return
-			if matrix.is_inside(target) and LevelMatrix.is_end(matrix.symbol_at(target)) \
-					and not rules.all_visited():
-				_emit_end_blocked()
-		# Mantem o arrasto ativo para permitir mudar de direcao sem soltar.
 
 
 func _emit_blocked() -> void:

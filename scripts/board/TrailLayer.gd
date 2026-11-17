@@ -21,7 +21,7 @@ func _cell_center(p: Vector2i) -> Vector2:
 func _draw() -> void:
 	if cells.size() < 1:
 		return
-	var col := Color(StyleFactory.TRAIL, 0.55)
+	var col := Color(StyleFactory.TRAIL, 0.715)
 
 	if cells.size() >= 2:
 		var pts := PackedVector2Array()

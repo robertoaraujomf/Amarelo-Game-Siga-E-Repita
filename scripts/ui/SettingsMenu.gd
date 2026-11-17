@@ -45,7 +45,7 @@ func _ready() -> void:
 	caption.add_theme_color_override("font_color", Color(1, 1, 1, 0.85))
 	col.add_child(caption)
 
-	_swipe_btn = StyleFactory.make_button("Toque / Deslizar", Color("6bcb77"), 34)
+	_swipe_btn = StyleFactory.make_button("Toque na casa", Color("6bcb77"), 34)
 	_swipe_btn.pressed.connect(func() -> void:
 		Settings.set_control_mode(Settings.ControlMode.SWIPE)
 		_refresh())

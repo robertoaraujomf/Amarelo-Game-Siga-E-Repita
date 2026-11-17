@@ -261,10 +261,10 @@ func _trail_path() -> PackedVector2Array:
 		var perp := Vector2(-d.y, d.x)
 		if perp.length() < 0.001:
 			perp = Vector2(0, -1)
-		var wobble := 20.0 + 12.0 * sin(float(i) * 2.3) + 8.0 * cos(float(i) * 1.9)
+		var wobble := 40.0 + 24.0 * sin(float(i) * 2.3) + 16.0 * cos(float(i) * 1.9)
 		var c := mid + perp.normalized() * wobble
-		for s in range(11):
-			var t := float(s) / 10.0
+		for s in range(17):
+			var t := float(s) / 16.0
 			var mt := 1.0 - t
 			pts.append(mt * mt * p0 + 2.0 * mt * t * c + t * t * p1)
 	return pts

@@ -1,0 +1,23 @@
+{
+  "id": 16,
+  "sequences": [
+    [
+      "arvore",
+      "aviao",
+      "balao",
+      "bicicleta"
+    ]
+  ],
+  "matrix": [
+    "X X X arvore aviao balao bicicleta arvore bicicleta balao bicicleta arvore aviao X X arvore bicicleta",
+    "X X X bicicleta X bicicleta balao aviao arvore aviao arvore aviao balao bicicleta arvore aviao balao",
+    "aviao arvore bicicleta balao bicicleta arvore aviao balao bicicleta arvore bicicleta balao aviao arvore aviao arvore bicicleta",
+    "balao X arvore aviao arvore aviao arvore bicicleta X & arvore aviao arvore bicicleta balao X arvore",
+    "bicicleta arvore bicicleta arvore bicicleta balao aviao balao X balao aviao arvore aviao balao bicicleta arvore aviao",
+    "X aviao balao aviao arvore aviao arvore X arvore bicicleta balao bicicleta balao aviao arvore bicicleta balao",
+    "X arvore bicicleta X bicicleta X bicicleta balao aviao arvore aviao arvore aviao X aviao balao bicicleta",
+    "X aviao arvore X balao bicicleta X X X X X bicicleta arvore X balao aviao arvore",
+    "bicicleta balao bicicleta arvore aviao arvore X X X X X balao aviao arvore bicicleta X X",
+    "arvore aviao X X balao bicicleta § X X X X X X X X X X"
+  ]
+}

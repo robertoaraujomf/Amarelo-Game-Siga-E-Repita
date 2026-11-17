@@ -186,8 +186,11 @@ func _draw_next_hint(r: float) -> void:
 ## Borda amarela, brilhante e piscando na posição atual do player.
 func _draw_player_halo(r: float) -> void:
 	var t := _time * 5.0
-	for i in 4:
-		var a := 0.55 * (0.5 + 0.5 * sin(t - float(i) * 0.7))
-		var rr := r * (1.02 + float(i) * 0.09)
+	var p := 0.5 + 0.5 * sin(t)
+	# Brilho de fundo pulsante.
+	draw_circle(Vector2.ZERO, r * (1.35 + 0.25 * p), Color(StyleFactory.HIGHLIGHT, 0.12 + 0.28 * p))
+	for i in 5:
+		var a := 0.6 * (0.5 + 0.5 * sin(t - float(i) * 0.6))
+		var rr := r * (1.02 + float(i) * 0.10 + 0.06 * p)
 		draw_arc(Vector2.ZERO, rr, 0.0, TAU, 56,
-				Color(StyleFactory.HIGHLIGHT, a), r * 0.10, true)
+				Color(StyleFactory.HIGHLIGHT, a), r * (0.11 + 0.04 * p), true)

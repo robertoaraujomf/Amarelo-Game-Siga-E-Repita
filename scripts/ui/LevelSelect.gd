@@ -49,7 +49,7 @@ func _ready() -> void:
 	# Apenas as fases 1 a 13 ficam visiveis na trilha por enquanto.
 	var visible_levels: Array = []
 	for lvl in Levels.levels:
-		if int(lvl.get("id", 0)) <= 15:
+		if int(lvl.get("id", 0)) <= 30:
 			visible_levels.append(lvl)
 	trail.build(visible_levels, GameState)
 	_scroll.add_child(trail)
@@ -71,7 +71,7 @@ func _ready() -> void:
 func _focus_current_phase(trail: LevelTrail) -> void:
 	if _scroll == null or trail == null:
 		return
-	var target_id := clampi(GameState.next_level_id(), 1, maxi(mini(Levels.count(), 15), 1))
+	var target_id := clampi(GameState.next_level_id(), 1, maxi(mini(Levels.count(), 30), 1))
 	var pos := trail.node_pos(target_id)
 	# Centraliza o circulo da fase atual na viewport.
 	_scroll.scroll_horizontal = int(pos.x - _scroll.size.x * 0.5)

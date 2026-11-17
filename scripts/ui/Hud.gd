@@ -166,7 +166,7 @@ func _build_controls() -> void:
 
 	# Dica de swipe (modo toque)
 	_swipe_hint = Label.new()
-	_swipe_hint.text = "Deslize o dedo sobre o mapa para mover"
+	_swipe_hint.text = "Toque na casa para mover"
 	_swipe_hint.add_theme_font_size_override("font_size", 22)
 	_swipe_hint.add_theme_color_override("font_color", Color(1, 1, 1, 0.92))
 	_swipe_hint.horizontal_alignment = HORIZONTAL_ALIGNMENT_CENTER
